@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
+import { Button, Card, TextInput } from "@mantine/core";
 
 interface RegisterForm {
   email: string;
@@ -34,6 +35,7 @@ const registerSchema = yup.object().shape({
 });
 
 const RegisterPage = () => {
+  const [loading, setLoading] = useState<boolean>(false);
   const formOptions = { resolver: yupResolver(registerSchema) };
 
   const { register, handleSubmit, reset, formState } =
@@ -41,39 +43,73 @@ const RegisterPage = () => {
   const { errors } = formState;
 
   const onSubmit = (data: RegisterForm) => {
+    setLoading(true);
     console.log(JSON.stringify(data, null, 2));
     reset();
   };
 
   return (
-    <div>
+    <Card>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <input type="text" {...register("email")} placeholder="Email" />
-        <p>{errors.email?.message}</p>
+        <TextInput
+          id="email"
+          label="Email"
+          {...register("email")}
+          error={errors.email?.message}
+          required
+        />
 
-        <input type="text" {...register("username")} placeholder="Username" />
-        <p>{errors.name?.message}</p>
+        <TextInput
+          id="username"
+          label="Username"
+          {...register("username")}
+          error={errors.username?.message}
+          required
+        />
 
-        <input type="text" {...register("name")} placeholder="Name" />
-        <p>{errors.name?.message}</p>
+        <TextInput
+          id="name"
+          label="Name"
+          {...register("name")}
+          error={errors.name?.message}
+        />
 
-        <input
+        <TextInput
+          id="password"
           type="password"
           {...register("password")}
-          placeholder="Password"
+          label="Password"
+          error={errors.password?.message}
+          required
         />
-        <p>{errors.password?.message}</p>
 
-        <input
+        <TextInput
+          id="confirmPassword"
           type="password"
           {...register("confirmPassword")}
-          placeholder="Confirm Password"
+          label="Confirm password"
+          error={errors.confirmPassword?.message}
+          required
         />
-        <p>{errors.confirmPassword?.message}</p>
 
-        <button type="submit">Register</button>
+        <Button
+          type="submit"
+          loading={loading}
+          fullWidth
+          color="cyan"
+          styles={(theme) => ({
+            root: {
+              marginTop: 10,
+              "&:hover": {
+                backgroundColor: theme.fn.darken("#00acee", 0.05),
+              },
+            },
+          })}
+        >
+          Sign up
+        </Button>
       </form>
-    </div>
+    </Card>
   );
 };
 
