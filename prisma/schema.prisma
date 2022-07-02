@@ -13,8 +13,12 @@ datasource db {
 model User {
   id Int @default(autoincrement()) @id
   email String @db.VarChar(255) @unique
-  name String? @db.VarChar(255)
+  username String @unique
+  name String? 
+  password String
   projects Project[]
+  createdAt DateTime @default(now()) @map(name: "created_at")
+  updatedAt DateTime @updatedAt @map(name: "updated_at")
   @@map(name: "user")
 }
 
@@ -22,6 +26,8 @@ model Project {
   id Int @default(autoincrement()) @id
   title String @db.VarChar(255)
   owner User @relation(fields: [ownerId], references: [id])
-  ownerId Int
+  ownerId Int @map(name: "owner_id")
+  createdAt DateTime @default(now()) @map(name: "created_at")
+  updatedAt DateTime @updatedAt @map(name: "updated_at")
   @@map(name: "project")
 }
