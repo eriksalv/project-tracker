@@ -28,7 +28,24 @@ function MyApp({ Component, pageProps }: AppProps) {
       <MantineProvider
         withGlobalStyles
         withNormalizeCSS
-        theme={{ colorScheme }}
+        theme={{
+          colorScheme,
+
+          colors: {
+            dark: [
+              "#E8E8EE",
+              "#B2B2C7",
+              "#8586A8",
+              "#63648E",
+              "#4B4C6A",
+              "#39394F",
+              "#2B2B3B",
+              "#21212C",
+              "#191921",
+              "#131318",
+            ],
+          },
+        }}
       >
         <ApplicationContainer>
           <Component {...pageProps} />

@@ -79,22 +79,21 @@ const ApplicationContainer: React.FC<{ children: JSX.Element }> = ({
               />
             </MediaQuery>
 
-            <Title order={2}>
-              <Link href="/">
-                <a>Project Tracker</a>
-              </Link>
-            </Title>
+            <Link href="/" passHref>
+              <Title order={2} style={{ cursor: "pointer" }}>
+                Project Tracker
+              </Title>
+            </Link>
+
             <Group>
-              <Button variant="outline">
-                <Link href="/login">
-                  <a>Sign in</a>
-                </Link>
-              </Button>
-              <Button>
-                <Link href="/register">
-                  <a>Sign up</a>
-                </Link>
-              </Button>
+              <Link href="/login" passHref>
+                <Button component="a" variant="outline">
+                  Sign in
+                </Button>
+              </Link>
+              <Link href="/register" passHref>
+                <Button component="a">Sign up</Button>
+              </Link>
 
               <ToggleLightDarkButton />
             </Group>

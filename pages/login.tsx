@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { Button, Card, TextInput } from "@mantine/core";
+import { Button, Card, PasswordInput, TextInput } from "@mantine/core";
 
 interface LoginForm {
   emailOrUsername: string;
@@ -38,9 +38,8 @@ const LoginPage = () => {
           error={errors.emailOrUsername?.message}
         />
 
-        <TextInput
+        <PasswordInput
           id="password"
-          type="password"
           label="Password"
           {...register("password")}
           error={errors.password?.message}
