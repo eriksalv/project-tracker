@@ -1,38 +1,9 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
 import { Button, Card, PasswordInput, TextInput } from "@mantine/core";
-
-interface RegisterForm {
-  email: string;
-  username: string;
-  name?: string;
-  password: string;
-  confirmPassword: string;
-}
-
-const registerSchema = yup.object().shape({
-  email: yup
-    .string()
-    .email("Invalid email format")
-    .required("Email is required"),
-  username: yup
-    .string()
-    .min(6, "Username must be at least 6 characters")
-    .max(20, "Username cannot exceed 20 characters")
-    .required("Username is required"),
-  name: yup.string(),
-  password: yup
-    .string()
-    .min(8, "Password must be at least 8 characters")
-    .max(32, "Password cannot exceed 32 characters")
-    .required("Password is required"),
-  confirmPassword: yup
-    .string()
-    .oneOf([yup.ref("password"), null], "Passwords do not match")
-    .required("Confirm password is required"),
-});
+import { registerSchema, RegisterForm } from "../lib/validation/signup";
+import axios from "axios";
 
 const RegisterPage = () => {
   const [loading, setLoading] = useState<boolean>(false);
@@ -42,10 +13,17 @@ const RegisterPage = () => {
     useForm<RegisterForm>(formOptions);
   const { errors } = formState;
 
-  const onSubmit = (data: RegisterForm) => {
+  const onSubmit = async (data: RegisterForm) => {
     setLoading(true);
     console.log(JSON.stringify(data, null, 2));
-    reset();
+
+    try {
+      const res = await axios.post(`/api/auth/signup`, data);
+      console.log(res);
+    } catch (error: any) {
+      console.log(error.response.data.message);
+    }
+    setLoading(false);
   };
 
   return (
