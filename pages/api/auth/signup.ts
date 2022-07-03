@@ -1,7 +1,7 @@
 import prisma from "../../../lib/prisma";
 import { NextApiRequest, NextApiResponse } from "next";
 import { hashPassword } from "../../../lib/auth";
-import { registerSchema } from "../../../lib/validation/signup";
+import { RegisterForm, registerSchema } from "../../../lib/validation/signup";
 import validate from "../../../lib/validation/validate";
 
 export default async function handler(
@@ -26,7 +26,7 @@ async function handlePOST(req: NextApiRequest, res: NextApiResponse) {
     return res.status(422).json({ errors });
   }
 
-  const { email, username, name, password } = data!;
+  const { email, username, name, password } = data as RegisterForm;
 
   if (await prisma.user.findUnique({ where: { email } })) {
     return res.status(400).json({ message: "Email is already taken" });
