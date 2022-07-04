@@ -1,18 +1,8 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
 import { Button, Card, PasswordInput, TextInput } from "@mantine/core";
-
-interface LoginForm {
-  emailOrUsername: string;
-  password: string;
-}
-
-const loginSchema = yup.object().shape({
-  emailOrUsername: yup.string().required("Please enter your email or username"),
-  password: yup.string().required("Please enter your password"),
-});
+import { LoginForm, loginSchema } from "../lib/validation/signin";
 
 const LoginPage = () => {
   const [loading, setLoading] = useState<boolean>(false);
