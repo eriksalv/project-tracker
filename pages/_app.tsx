@@ -7,6 +7,7 @@ import {
 } from "@mantine/core";
 import ApplicationContainer from "../components/layout/ApplicationContainer";
 import { useHotkeys, useLocalStorage } from "@mantine/hooks";
+import { wrapper } from "../app/store";
 
 function MyApp({ Component, pageProps }: AppProps) {
   const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({
@@ -55,4 +56,4 @@ function MyApp({ Component, pageProps }: AppProps) {
   );
 }
 
-export default MyApp;
+export default wrapper.withRedux(MyApp);

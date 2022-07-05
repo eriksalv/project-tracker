@@ -20,7 +20,7 @@ const ProfileMenu = () => {
 
       <Divider />
 
-      <Menu.Item component={NextLink} href="/">
+      <Menu.Item component={NextLink} href="/login">
         Sign out
       </Menu.Item>
     </Menu>
