@@ -4,17 +4,19 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { Button, Card, PasswordInput, TextInput } from "@mantine/core";
 import { LoginForm, loginSchema } from "../lib/validation/signin";
 
+import useAuthStore from "../store/auth";
+
 const LoginPage = () => {
-  const [loading, setLoading] = useState<boolean>(false);
   const formOptions = { resolver: yupResolver(loginSchema) };
 
   const { register, handleSubmit, reset, formState } =
     useForm<LoginForm>(formOptions);
   const { errors } = formState;
 
+  const { signin, loading } = useAuthStore();
+
   const onSubmit = (data: LoginForm) => {
-    setLoading(true);
-    console.log(JSON.stringify(data, null, 2));
+    signin(data);
     reset();
   };
 

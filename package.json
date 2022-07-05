@@ -21,7 +21,8 @@
     "react-dom": "18.2.0",
     "react-hook-form": "^7.33.1",
     "tabler-icons-react": "^1.52.0",
-    "yup": "^0.32.11"
+    "yup": "^0.32.11",
+    "zustand": "^4.0.0-rc.1"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.2",

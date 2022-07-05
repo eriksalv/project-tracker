@@ -3,27 +3,19 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Button, Card, PasswordInput, TextInput } from "@mantine/core";
 import { registerSchema, RegisterForm } from "../lib/validation/signup";
-import axios from "axios";
+import useAuthStore from "../store/auth";
 
 const RegisterPage = () => {
-  const [loading, setLoading] = useState<boolean>(false);
   const formOptions = { resolver: yupResolver(registerSchema) };
 
   const { register, handleSubmit, reset, formState } =
     useForm<RegisterForm>(formOptions);
   const { errors } = formState;
 
-  const onSubmit = async (data: RegisterForm) => {
-    setLoading(true);
-    console.log(JSON.stringify(data, null, 2));
+  const { loading, status, signup } = useAuthStore();
 
-    try {
-      const res = await axios.post(`/api/auth/signup`, data);
-      console.log(res);
-    } catch (error: any) {
-      console.log(error.response.data.message);
-    }
-    setLoading(false);
+  const onSubmit = async (data: RegisterForm) => {
+    signup(data);
   };
 
   return (

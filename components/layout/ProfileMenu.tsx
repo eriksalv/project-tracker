@@ -2,7 +2,7 @@ import { Avatar, Divider, Menu, MenuLabel } from "@mantine/core";
 import { NextLink } from "@mantine/next";
 import React from "react";
 
-const ProfileMenu = () => {
+const ProfileMenu: React.FC<{ username: string }> = ({ username }) => {
   return (
     <Menu
       withArrow
@@ -13,14 +13,14 @@ const ProfileMenu = () => {
         <Avatar sx={{ cursor: "pointer" }} radius="xl" size="md" color="blue" />
       }
     >
-      <MenuLabel>Signed in as profile</MenuLabel>
+      <MenuLabel>Signed in as {username}</MenuLabel>
       <Menu.Item component={NextLink} href="/profile">
         Your profile
       </Menu.Item>
 
       <Divider />
 
-      <Menu.Item component={NextLink} href="/">
+      <Menu.Item component={NextLink} href="/login">
         Sign out
       </Menu.Item>
     </Menu>

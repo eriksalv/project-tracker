@@ -7,11 +7,11 @@ import {
   MantineTheme,
   MediaQuery,
   Title,
-  Avatar,
 } from "@mantine/core";
 import Link from "next/link";
 import ToggleLightDarkButton from "./ToggleLightDarkButton";
 import ProfileMenu from "./ProfileMenu";
+import useAuthState from "../../store/auth";
 
 interface Props {
   theme: MantineTheme;
@@ -20,6 +20,8 @@ interface Props {
 }
 
 const Header: React.FC<Props> = ({ theme, opened, setOpened }) => {
+  const { user } = useAuthState();
+
   return (
     <MantineHeader height={70} p="md">
       <div
@@ -47,18 +49,20 @@ const Header: React.FC<Props> = ({ theme, opened, setOpened }) => {
         </Link>
 
         <Group>
-          <Group>
-            <Link href="/login" passHref>
-              <Button component="a" variant="outline">
-                Sign in
-              </Button>
-            </Link>
-            <Link href="/register" passHref>
-              <Button component="a">Sign up</Button>
-            </Link>
-          </Group>
-
-          <ProfileMenu />
+          {user ? (
+            <ProfileMenu username={user.username} />
+          ) : (
+            <Group>
+              <Link href="/login" passHref>
+                <Button component="a" variant="outline">
+                  Sign in
+                </Button>
+              </Link>
+              <Link href="/register" passHref>
+                <Button component="a">Sign up</Button>
+              </Link>
+            </Group>
+          )}
 
           <ToggleLightDarkButton />
         </Group>
