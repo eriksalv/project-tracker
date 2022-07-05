@@ -8,12 +8,14 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  if (req.method === "POST") {
-    await handlePOST(req, res);
-  } else {
-    throw new Error(
-      `The HTTP method ${req.method} is not supported for this route.`
-    );
+  switch (req.method) {
+    case "POST":
+      await handlePOST(req, res);
+      break;
+    default:
+      return res.status(405).json({
+        message: `The HTTP method ${req.method} is not supported for this route.`,
+      });
   }
 }
 

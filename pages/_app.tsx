@@ -5,7 +5,7 @@ import {
   ColorSchemeProvider,
   MantineProvider,
 } from "@mantine/core";
-import ApplicationContainer from "../components/ApplicationContainer";
+import ApplicationContainer from "../components/layout/ApplicationContainer";
 import { useHotkeys, useLocalStorage } from "@mantine/hooks";
 
 function MyApp({ Component, pageProps }: AppProps) {

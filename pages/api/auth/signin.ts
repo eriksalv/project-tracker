@@ -13,9 +13,9 @@ export default async function handler(
       await handlePOST(req, res);
       break;
     default:
-      return res
-        .status(405)
-        .json(`The HTTP method ${req.method} is not supported for this route.`);
+      return res.status(405).json({
+        message: `The HTTP method ${req.method} is not supported for this route.`,
+      });
   }
 }
 

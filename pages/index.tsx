@@ -3,15 +3,16 @@ import type { NextPage } from "next";
 import prisma from "../lib/prisma";
 
 interface Props {
-  users: User[];
+  users: string;
 }
 
 const Home: NextPage<Props> = (props) => {
   const { users } = props;
+  const parsedUsers = JSON.parse(users) as User[];
 
   return (
     <ul>
-      {users.map((user) => (
+      {parsedUsers.map((user) => (
         <li key={user.id}>{user.email}</li>
       ))}
     </ul>
@@ -22,7 +23,7 @@ export const getStaticProps = async () => {
   const users = await prisma.user.findMany();
   return {
     props: {
-      users,
+      users: JSON.stringify(users),
     },
     revalidate: 60,
   };
