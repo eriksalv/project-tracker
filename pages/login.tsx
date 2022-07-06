@@ -3,8 +3,10 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Button, Card, PasswordInput, TextInput } from "@mantine/core";
 import { LoginForm, loginSchema } from "../lib/validation/signin";
-
+import { signin } from "../lib/queries/auth";
+import { useMutation } from "react-query";
 import useAuthStore from "../store/auth";
+import { useRouter } from "next/router";
 
 const LoginPage = () => {
   const formOptions = { resolver: yupResolver(loginSchema) };
@@ -13,11 +15,26 @@ const LoginPage = () => {
     useForm<LoginForm>(formOptions);
   const { errors } = formState;
 
-  const { signin, loading } = useAuthStore();
+  const router = useRouter();
+
+  const { onError, onSuccess } = useAuthStore();
+
+  const loginMutation = useMutation(
+    async (data: LoginForm) => await signin(data),
+    {
+      onSuccess: (data) => {
+        onSuccess(data);
+        router.replace("/");
+      },
+      onError: () => {
+        onError();
+        reset();
+      },
+    }
+  );
 
   const onSubmit = (data: LoginForm) => {
-    signin(data);
-    reset();
+    loginMutation.mutate(data);
   };
 
   return (
@@ -39,7 +56,7 @@ const LoginPage = () => {
 
         <Button
           type="submit"
-          loading={loading}
+          loading={loginMutation.isLoading}
           fullWidth
           color="cyan"
           styles={(theme) => ({

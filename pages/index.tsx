@@ -1,29 +1,43 @@
-import { User } from "@prisma/client";
 import type { NextPage } from "next";
 import prisma from "../lib/prisma";
+import { dehydrate, QueryClient, useQuery } from "react-query";
+import axios from "axios";
 
-interface Props {
-  users: string;
-}
+const Home: NextPage = () => {
+  const { data, status } = useQuery("users", () => [{}], { enabled: false });
 
-const Home: NextPage<Props> = (props) => {
-  const { users } = props;
-  const parsedUsers = JSON.parse(users) as User[];
+  if (status === "loading") {
+    return <h1>Loading</h1>;
+  }
+
+  if (status === "error") {
+    return <h1>Error</h1>;
+  }
 
   return (
-    <ul>
-      {parsedUsers.map((user) => (
-        <li key={user.id}>{user.email}</li>
-      ))}
-    </ul>
+    <>
+      <h1>Hello world</h1>
+      <ul>
+        {data?.map((user: any) => (
+          <li key={user.id}>{user.email}</li>
+        ))}
+      </ul>
+    </>
   );
 };
 
 export const getStaticProps = async () => {
-  const users = await prisma.user.findMany();
+  const queryClient = new QueryClient();
+
+  await queryClient.prefetchQuery("users", async () => {
+    return await prisma.user.findMany({
+      select: { id: true, email: true, username: true },
+    });
+  });
+
   return {
     props: {
-      users: JSON.stringify(users),
+      dehydratedState: dehydrate(queryClient),
     },
     revalidate: 60,
   };

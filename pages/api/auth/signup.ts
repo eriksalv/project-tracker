@@ -48,6 +48,7 @@ async function handlePOST(req: NextApiRequest, res: NextApiResponse) {
     return res.status(201).json({
       message: "User created successfully",
       user: {
+        id: newUser.id,
         email: newUser.email,
         username: newUser.username,
         name: newUser.name,

@@ -1,8 +1,11 @@
 import { Avatar, Divider, Menu, MenuLabel } from "@mantine/core";
 import { NextLink } from "@mantine/next";
 import React from "react";
+import useAuthStore from "../../store/auth";
 
 const ProfileMenu: React.FC<{ username: string }> = ({ username }) => {
+  const { logout } = useAuthStore();
+
   return (
     <Menu
       withArrow
@@ -20,7 +23,7 @@ const ProfileMenu: React.FC<{ username: string }> = ({ username }) => {
 
       <Divider />
 
-      <Menu.Item component={NextLink} href="/login">
+      <Menu.Item component={NextLink} href="/login" onClick={logout}>
         Sign out
       </Menu.Item>
     </Menu>

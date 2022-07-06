@@ -4,6 +4,9 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { Button, Card, PasswordInput, TextInput } from "@mantine/core";
 import { registerSchema, RegisterForm } from "../lib/validation/signup";
 import useAuthStore from "../store/auth";
+import { useMutation } from "react-query";
+import { signup } from "../lib/queries/auth";
+import { useRouter } from "next/router";
 
 const RegisterPage = () => {
   const formOptions = { resolver: yupResolver(registerSchema) };
@@ -12,10 +15,26 @@ const RegisterPage = () => {
     useForm<RegisterForm>(formOptions);
   const { errors } = formState;
 
-  const { loading, status, signup } = useAuthStore();
+  const { onError, onSuccess } = useAuthStore();
+
+  const registerMutation = useMutation(
+    async (data: RegisterForm) => await signup(data),
+    {
+      onSuccess: (data) => {
+        onSuccess(data);
+        router.replace("/");
+      },
+      onError: () => {
+        onError();
+        reset();
+      },
+    }
+  );
+
+  const router = useRouter();
 
   const onSubmit = async (data: RegisterForm) => {
-    signup(data);
+    registerMutation.mutate(data);
   };
 
   return (
@@ -62,7 +81,7 @@ const RegisterPage = () => {
 
         <Button
           type="submit"
-          loading={loading}
+          loading={registerMutation.isLoading}
           fullWidth
           color="cyan"
           styles={(theme) => ({
