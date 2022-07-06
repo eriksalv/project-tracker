@@ -1,7 +1,6 @@
 import type { NextPage } from "next";
 import prisma from "../lib/prisma";
 import { dehydrate, QueryClient, useQuery } from "react-query";
-import axios from "axios";
 
 const Home: NextPage = () => {
   const { data, status } = useQuery("users", () => [{}], { enabled: false });

@@ -17,8 +17,14 @@ const ProfileMenu: React.FC<{ username: string }> = ({ username }) => {
       }
     >
       <MenuLabel>Signed in as {username}</MenuLabel>
-      <Menu.Item component={NextLink} href="/profile">
+      <Menu.Item component={NextLink} href={`/${username}`}>
         Your profile
+      </Menu.Item>
+
+      <Divider />
+
+      <Menu.Item component={NextLink} href="/settings/profile">
+        Settings
       </Menu.Item>
 
       <Divider />

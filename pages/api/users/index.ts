@@ -9,12 +9,16 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  if (req.method === "GET") {
-    await handleGET(res);
-  } else {
-    throw new Error(
-      `The HTTP method ${req.method} is not supported for this route.`
-    );
+  switch (req.method) {
+    case "GET":
+      await handleGET(res);
+      break;
+    default:
+      return res.status(405).json({
+        user: null,
+        errors: null,
+        message: `The HTTP method ${req.method} is not supported for this route.`,
+      });
   }
 }
 

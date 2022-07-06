@@ -3,6 +3,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { hashPassword } from "../../../lib/auth";
 import { RegisterForm, registerSchema } from "../../../lib/validation/signup";
 import validate from "../../../lib/validation/validate";
+import { Prisma } from "@prisma/client";
 
 export default async function handler(
   req: NextApiRequest,
