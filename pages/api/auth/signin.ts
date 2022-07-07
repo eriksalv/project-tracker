@@ -1,5 +1,9 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { verifyPassword } from "../../../lib/auth";
+import {
+  createSession,
+  getAuthTokenId,
+  verifyPassword,
+} from "../../../lib/auth";
 import prisma from "../../../lib/prisma";
 import { LoginForm, loginSchema } from "../../../lib/validation/signin";
 import validate from "../../../lib/validation/validate";
@@ -24,6 +28,39 @@ async function handlePOST(
   req: NextApiRequest,
   res: NextApiResponse<AuthResponse>
 ) {
+  const { authorization } = req.headers;
+
+  const token = authorization?.split(" ")[1];
+
+  const userId = token && (await getAuthTokenId(token));
+
+  if (userId) {
+    const user = await prisma.user.findUnique({
+      where: {
+        id: +userId,
+      },
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: "Something went wrong" });
+    }
+
+    return res.status(200).json({
+      message: "Already signed in",
+      accessToken: { success: true, userId: +userId, token },
+      user: {
+        id: user.id,
+        username: user.username,
+        name: user.name,
+        email: user.email,
+      },
+    });
+  }
+
+  if (token && !userId) {
+    return res.status(405).json({ message: "Unauthorized" });
+  }
+
   const { body } = req;
 
   const { data, errors } = await validate(loginSchema, body);
@@ -53,6 +90,7 @@ async function handlePOST(
         username: user.username,
         name: user.name,
       },
+      accessToken: await createSession(user),
     });
   }
 

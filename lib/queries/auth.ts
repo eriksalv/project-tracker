@@ -5,6 +5,11 @@ import { RegisterForm } from "../validation/signup";
 
 export interface AuthResponse {
   user?: User;
+  accessToken?: {
+    userId: number;
+    success: boolean;
+    token: string;
+  };
   message?: string;
   errors?: string | string[];
 }

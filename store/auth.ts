@@ -5,28 +5,31 @@ import { devtools } from "zustand/middleware";
 
 export interface AuthState {
   user: User | null;
-  onError: () => void;
-  onSuccess: (data: AuthResponse) => void;
+  accessToken: {
+    success: boolean;
+    userId: number;
+    token: string;
+  } | null;
+  signin: (data: AuthResponse) => void;
   logout: () => void;
   isAuthenticated: () => boolean;
 }
 
 const getDefaultInitialState = () => ({
   user: null,
+  accessToken: null,
 });
 
 const useAuthStore = create<AuthState, any>(
   devtools((set, get) => ({
     ...getDefaultInitialState(),
-    onError: () => {
-      set({ user: null });
-    },
-    onSuccess: (data) => {
-      set({ user: data.user });
+    signin: (data) => {
+      localStorage.setItem("token", JSON.stringify(data.accessToken?.token!));
+      set({ user: data.user, accessToken: data.accessToken });
     },
     logout: () => {
-      //TODO: remove localstorage
-      set({ user: null });
+      localStorage.removeItem("token");
+      set({ user: null, accessToken: null });
     },
     isAuthenticated: () => !!get().user,
   }))

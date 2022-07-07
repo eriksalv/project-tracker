@@ -17,17 +17,17 @@ const LoginPage = () => {
 
   const router = useRouter();
 
-  const { onError, onSuccess } = useAuthStore();
+  const { signin: zustandSignin } = useAuthStore();
 
   const loginMutation = useMutation(
     async (data: LoginForm) => await signin(data),
     {
       onSuccess: (data) => {
-        onSuccess(data);
+        zustandSignin(data);
         router.replace("/");
       },
       onError: () => {
-        onError();
+        console.error("Something went wrong");
         reset();
       },
     }

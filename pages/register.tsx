@@ -15,17 +15,17 @@ const RegisterPage = () => {
     useForm<RegisterForm>(formOptions);
   const { errors } = formState;
 
-  const { onError, onSuccess } = useAuthStore();
+  const { signin } = useAuthStore();
 
   const registerMutation = useMutation(
     async (data: RegisterForm) => await signup(data),
     {
       onSuccess: (data) => {
-        onSuccess(data);
+        signin(data);
         router.replace("/");
       },
       onError: () => {
-        onError();
+        console.error("something went wrong");
         reset();
       },
     }
