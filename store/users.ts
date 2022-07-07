@@ -1,5 +1,5 @@
 import create from "zustand";
-import User from "../lib/client-types/user";
+import { User } from "../lib/client-types";
 import { devtools } from "zustand/middleware";
 
 export interface UsersState {

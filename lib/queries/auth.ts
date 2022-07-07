@@ -1,12 +1,12 @@
 import axios from "axios";
-import User from "../client-types/user";
+import { User } from "../client-types";
 import { LoginForm } from "../validation/signin";
 import { RegisterForm } from "../validation/signup";
 
 export interface AuthResponse {
-  user: User | null;
-  message: string | null;
-  errors: string | string[] | null;
+  user?: User;
+  message?: string;
+  errors?: string | string[];
 }
 
 export const signin = async (

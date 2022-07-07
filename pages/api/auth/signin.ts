@@ -15,8 +15,6 @@ export default async function handler(
       break;
     default:
       return res.status(405).json({
-        user: null,
-        errors: null,
         message: `The HTTP method ${req.method} is not supported for this route.`,
       });
   }
@@ -31,7 +29,7 @@ async function handlePOST(
   const { data, errors } = await validate(loginSchema, body);
 
   if (errors) {
-    return res.status(422).json({ user: null, errors, message: null });
+    return res.status(422).json({ errors });
   }
 
   const { emailOrUsername, password } = data as LoginForm;
@@ -55,11 +53,8 @@ async function handlePOST(
         username: user.username,
         name: user.name,
       },
-      errors: null,
     });
   }
 
-  return res
-    .status(401)
-    .json({ user: null, errors: null, message: "Invalid credentials" });
+  return res.status(401).json({ message: "Invalid credentials" });
 }

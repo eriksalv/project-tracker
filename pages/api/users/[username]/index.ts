@@ -21,8 +21,6 @@ export default async function handler(
       break;
     default:
       return res.status(405).json({
-        users: null,
-        errors: null,
         message: `The HTTP method ${req.method} is not supported for this route.`,
       });
   }
@@ -50,19 +48,13 @@ async function handleGET(
     if (!user) {
       return res.status(404).json({
         message: "User not found",
-        errors: null,
-        users: null,
       });
     }
 
-    return res
-      .status(200)
-      .json({ user, message: null, errors: null, users: null });
+    return res.status(200).json({ user });
   } catch (error) {
     return res.status(200).json({
       message: "Something went wrong",
-      errors: null,
-      users: null,
     });
   }
 }
@@ -78,7 +70,7 @@ async function handlePUT(
   const { data, errors } = await validate(updateProfileSchema, body);
 
   if (errors) {
-    return res.status(422).json({ errors, message: null, users: null });
+    return res.status(422).json({ errors });
   }
 
   const { name } = data as UpdateProfileForm;
@@ -96,16 +88,12 @@ async function handlePUT(
     return res.status(200).json({
       message: "Successfully updated user",
       user: updateUser,
-      errors: null,
-      users: null,
     });
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
       if (error.code === "P2025") {
         return res.status(404).json({
           message: "User not found",
-          errors: null,
-          users: null,
         });
       }
     }
@@ -113,7 +101,6 @@ async function handlePUT(
     return res.status(500).json({
       message: "Something went wrong",
       errors: JSON.stringify(error),
-      users: null,
     });
   }
 }

@@ -1,5 +1,5 @@
 import create from "zustand";
-import User from "../lib/client-types/user";
+import { User } from "../lib/client-types";
 import { AuthResponse } from "../lib/queries/auth";
 import { devtools } from "zustand/middleware";
 

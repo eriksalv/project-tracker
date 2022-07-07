@@ -1,12 +1,12 @@
 import axios from "axios";
-import User from "../client-types/user";
+import { User } from "../client-types";
 import { UpdateProfileForm } from "../validation/update-profile";
 
 export interface UserResponse {
   user?: User;
-  users: User[] | null;
-  message: string | null;
-  errors: string | string[] | null;
+  users?: User[];
+  message?: string;
+  errors?: string | string[];
 }
 
 export const getUser = async (username: string): Promise<UserResponse> => {
