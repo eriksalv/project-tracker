@@ -13,14 +13,10 @@ const ApplicationContainer: React.FC<{ children: JSX.Element }> = ({
   const [opened, setOpened] = useState(false);
   const [token, setToken] = useState<null | string>(null);
 
-  const { signin } = useAuthStore();
+  const { signin, logout } = useAuthStore();
 
   useEffect(() => {
-    const unparsedToken = localStorage.getItem("token");
-
-    const token = unparsedToken && JSON.parse(unparsedToken);
-
-    setToken(token);
+    setToken(localStorage.getItem("token"));
   }, []);
 
   useQuery(
@@ -42,8 +38,9 @@ const ApplicationContainer: React.FC<{ children: JSX.Element }> = ({
       onSuccess: (data) => {
         signin(data);
       },
-      onError: (error) => {
-        console.log(error);
+      onError: () => {
+        setToken(null);
+        logout();
       },
     }
   );

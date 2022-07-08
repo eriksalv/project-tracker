@@ -58,7 +58,7 @@ async function handlePOST(
   }
 
   if (token && !userId) {
-    return res.status(405).json({ message: "Unauthorized" });
+    return res.status(401).json({ message: "Unauthorized" });
   }
 
   const { body } = req;

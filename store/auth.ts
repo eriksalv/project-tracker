@@ -24,7 +24,7 @@ const useAuthStore = create<AuthState, any>(
   devtools((set, get) => ({
     ...getDefaultInitialState(),
     signin: (data) => {
-      localStorage.setItem("token", JSON.stringify(data.accessToken?.token!));
+      localStorage.setItem("token", data.accessToken?.token!);
       set({ user: data.user, accessToken: data.accessToken });
     },
     logout: () => {

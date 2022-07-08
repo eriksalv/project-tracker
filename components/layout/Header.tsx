@@ -11,7 +11,7 @@ import {
 import Link from "next/link";
 import ToggleLightDarkButton from "./ToggleLightDarkButton";
 import ProfileMenu from "./ProfileMenu";
-import useAuthState from "../../store/auth";
+import useAuthStore from "../../store/auth";
 
 interface Props {
   theme: MantineTheme;
@@ -20,7 +20,7 @@ interface Props {
 }
 
 const Header: React.FC<Props> = ({ theme, opened, setOpened }) => {
-  const { user } = useAuthState();
+  const { user } = useAuthStore();
 
   return (
     <MantineHeader height={70} p="md">
