@@ -4,19 +4,28 @@ import Header from "./Header";
 import Navbar from "./Navbar";
 import useAuthStore from "../../store/auth";
 import axios from "axios";
+import { useQuery } from "react-query";
 
 const ApplicationContainer: React.FC<{ children: JSX.Element }> = ({
   children,
 }) => {
   const theme = useMantineTheme();
   const [opened, setOpened] = useState(false);
+  const [token, setToken] = useState<null | string>(null);
 
   const { signin } = useAuthStore();
 
   useEffect(() => {
-    const fetchUser = async (token: string) => {
-      console.log(token);
+    const unparsedToken = localStorage.getItem("token");
 
+    const token = unparsedToken && JSON.parse(unparsedToken);
+
+    setToken(token);
+  }, []);
+
+  useQuery(
+    ["signin", token],
+    async () => {
       const res = await axios.post(
         "/api/auth/signin",
         {},
@@ -27,18 +36,17 @@ const ApplicationContainer: React.FC<{ children: JSX.Element }> = ({
         }
       );
       return res.data;
-    };
-
-    const token = localStorage.getItem("token");
-
-    if (token) {
-      const tokenString = JSON.parse(token);
-
-      fetchUser(tokenString)
-        .then((data) => signin(data))
-        .catch(console.error);
+    },
+    {
+      enabled: !!token,
+      onSuccess: (data) => {
+        signin(data);
+      },
+      onError: (error) => {
+        console.log(error);
+      },
     }
-  }, [signin]);
+  );
 
   return (
     <AppShell

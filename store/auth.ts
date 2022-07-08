@@ -31,7 +31,7 @@ const useAuthStore = create<AuthState, any>(
       localStorage.removeItem("token");
       set({ user: null, accessToken: null });
     },
-    isAuthenticated: () => !!get().user,
+    isAuthenticated: () => !!get().accessToken,
   }))
 );
 

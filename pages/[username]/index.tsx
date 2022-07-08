@@ -2,31 +2,22 @@ import React from "react";
 import { useQuery } from "react-query";
 import { getUser, UserResponse } from "../../lib/queries/users";
 import { useRouter } from "next/router";
-import useUsersStore from "../../store/users";
 
 const Profile = () => {
   const router = useRouter();
 
-  const { user, setUser } = useUsersStore();
-
   const username =
     typeof router.query?.username === "string" ? router.query.username : "";
 
-  const { status } = useQuery<UserResponse, Error>(
+  const { data, status } = useQuery<UserResponse, Error>(
     ["profile", username],
     () => getUser(username),
     {
       enabled: username.length > 0,
-      onSuccess: (data) => {
-        setUser(data.user!);
-      },
-      onError: () => {
-        setUser(null);
-      },
     }
   );
 
-  if (status === "loading") {
+  if (status === "loading" || !data?.user) {
     return <h1>Loading...</h1>;
   }
 
@@ -34,7 +25,8 @@ const Profile = () => {
     return <h1>Error</h1>;
   }
 
-  if (status === "success" && user) {
+  if (status === "success") {
+    const { user } = data;
     return (
       <div>
         <h1>{user.username}</h1>
