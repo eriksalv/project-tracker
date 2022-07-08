@@ -2,6 +2,10 @@ import { User } from "@prisma/client";
 import { hash, compare, genSalt } from "bcryptjs";
 import jwt from "jsonwebtoken";
 import redis from "./redis";
+import { verify } from "jsonwebtoken";
+import { NextApiResponse } from "next";
+
+const jwtSecret = process.env.JWT_SECRET || "abc123";
 
 export async function hashPassword(password: string) {
   const salt = await genSalt(10);
@@ -15,12 +19,8 @@ export async function verifyPassword(password: string, hashedPassword: string) {
 export async function createSession(user: User) {
   const { id } = user;
   const token = signToken(id);
-  try {
-    await setToken(token, id);
-    return { success: true, userId: id, token };
-  } catch (error) {
-    console.log(error);
-  }
+  await setToken(token, id);
+  return { success: true, userId: id, token };
 }
 
 async function setToken(token: string, id: number) {
@@ -28,10 +28,26 @@ async function setToken(token: string, id: number) {
 }
 
 function signToken(id: number) {
-  const jwtSecret = process.env.JWT_SECRET || "abc123";
-  return jwt.sign({ id }, jwtSecret, { expiresIn: "2 days" });
+  return jwt.sign({ id }, jwtSecret, { expiresIn: "30m" });
 }
 
 export async function getAuthTokenId(token: string) {
-  return await redis.get(token);
+  if (await verifyToken(token)) {
+    return await redis.get(token);
+  }
+  return null;
+}
+
+export async function verifyToken(token: string) {
+  let userId;
+  try {
+    userId = verify(token, jwtSecret);
+  } catch (error) {
+    return null;
+  }
+  if (await redis.get(token)) {
+    return userId;
+  }
+  await redis.del(token);
+  return null;
 }

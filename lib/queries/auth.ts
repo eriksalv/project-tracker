@@ -27,3 +27,8 @@ export const signup = async (
   const res = await axios.post("/api/auth/signup", signupRequest);
   return res.data;
 };
+
+export const signout = async (): Promise<AuthResponse> => {
+  const res = await axios.post("/api/auth/signout");
+  return res.data;
+};

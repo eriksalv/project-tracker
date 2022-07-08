@@ -4,46 +4,34 @@ import Header from "./Header";
 import Navbar from "./Navbar";
 import useAuthStore from "../../store/auth";
 import axios from "axios";
-import { useQuery } from "react-query";
+import { useMutation } from "react-query";
 
 const ApplicationContainer: React.FC<{ children: JSX.Element }> = ({
   children,
 }) => {
   const theme = useMantineTheme();
   const [opened, setOpened] = useState(false);
-  const [token, setToken] = useState<null | string>(null);
 
   const { signin, logout } = useAuthStore();
 
-  useEffect(() => {
-    setToken(localStorage.getItem("token"));
-  }, []);
-
-  useQuery(
-    ["signin", token],
+  const { mutate } = useMutation(
     async () => {
-      const res = await axios.post(
-        "/api/auth/signin",
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const res = await axios.post("/api/auth/signin", {});
       return res.data;
     },
     {
-      enabled: !!token,
       onSuccess: (data) => {
         signin(data);
       },
       onError: () => {
-        setToken(null);
         logout();
       },
     }
   );
+
+  useEffect(() => {
+    mutate();
+  }, [mutate]);
 
   return (
     <AppShell

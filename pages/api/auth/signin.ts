@@ -8,6 +8,7 @@ import prisma from "../../../lib/prisma";
 import { LoginForm, loginSchema } from "../../../lib/validation/signin";
 import validate from "../../../lib/validation/validate";
 import { AuthResponse } from "../../../lib/queries/auth";
+import cookie from "cookie";
 
 export default async function handler(
   req: NextApiRequest,
@@ -28,11 +29,11 @@ async function handlePOST(
   req: NextApiRequest,
   res: NextApiResponse<AuthResponse>
 ) {
-  const { authorization } = req.headers;
+  const { cookies } = req;
 
-  const token = authorization?.split(" ")[1];
+  const jwt = cookies.token;
 
-  const userId = token && (await getAuthTokenId(token));
+  const userId = jwt && (await getAuthTokenId(jwt));
 
   if (userId) {
     const user = await prisma.user.findUnique({
@@ -47,7 +48,7 @@ async function handlePOST(
 
     return res.status(200).json({
       message: "Already signed in",
-      accessToken: { success: true, userId: +userId, token },
+      accessToken: { success: true, userId: +userId, token: jwt },
       user: {
         id: user.id,
         username: user.username,
@@ -57,7 +58,17 @@ async function handlePOST(
     });
   }
 
-  if (token && !userId) {
+  if (jwt && !userId) {
+    res.setHeader(
+      "Set-Cookie",
+      cookie.serialize("token", "", {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        expires: new Date(0),
+        sameSite: "strict",
+        path: "/",
+      })
+    );
     return res.status(401).json({ message: "Unauthorized" });
   }
 
@@ -82,6 +93,19 @@ async function handlePOST(
   }
 
   if (user && (await verifyPassword(password, user.password))) {
+    const accessToken = await createSession(user);
+
+    res.setHeader(
+      "Set-Cookie",
+      cookie.serialize("token", accessToken.token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        maxAge: 60 * 60 * 24 * 30,
+        sameSite: "strict",
+        path: "/",
+      })
+    );
+
     return res.status(200).json({
       message: "Logged in successfully",
       user: {
@@ -90,7 +114,6 @@ async function handlePOST(
         username: user.username,
         name: user.name,
       },
-      accessToken: await createSession(user),
     });
   }
 

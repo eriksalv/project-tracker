@@ -1,10 +1,22 @@
 import { Avatar, Divider, Menu, MenuLabel } from "@mantine/core";
 import { NextLink } from "@mantine/next";
 import React from "react";
+import { useMutation } from "react-query";
+import { signout } from "../../lib/queries/auth";
 import useAuthStore from "../../store/auth";
 
 const ProfileMenu: React.FC<{ username: string }> = ({ username }) => {
   const { logout } = useAuthStore();
+
+  const { mutate } = useMutation(signout, {
+    onSuccess: () => {
+      logout();
+    },
+  });
+
+  const onSignOut = () => {
+    mutate();
+  };
 
   return (
     <Menu
@@ -29,7 +41,7 @@ const ProfileMenu: React.FC<{ username: string }> = ({ username }) => {
 
       <Divider />
 
-      <Menu.Item component={NextLink} href="/login" onClick={logout}>
+      <Menu.Item component={NextLink} href="/login" onClick={onSignOut}>
         Sign out
       </Menu.Item>
     </Menu>
