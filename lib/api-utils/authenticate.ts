@@ -1,9 +1,12 @@
 import prisma from "../prisma";
 import { NextApiRequest, NextApiResponse } from "next";
-import { verifyToken } from "./auth";
+import { destroySession, verifyToken } from "./auth";
 import { JwtPayload } from "jsonwebtoken";
 
-export default async function authenticate(req: NextApiRequest) {
+export default async function authenticate(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
   const { cookies } = req;
 
   const jwt = cookies.token;
@@ -12,11 +15,12 @@ export default async function authenticate(req: NextApiRequest) {
     return false;
   }
 
-  const result = (await verifyToken(jwt)) as JwtPayload | null;
+  const result = verifyToken(jwt) as JwtPayload | null;
 
   const id = result?.id;
 
   if (!id) {
+    await destroySession(jwt, res);
     return false;
   }
 
