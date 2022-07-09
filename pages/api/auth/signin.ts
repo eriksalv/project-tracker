@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import {
   createSession,
   destroySession,
-  getAuthTokenId,
+  verifyAndDecodeToken,
   verifyPassword,
 } from "../../../lib/api-utils/auth";
 import prisma from "../../../lib/prisma";
@@ -33,7 +33,7 @@ async function handlePOST(
 
   const jwt = cookies.token;
 
-  const userId = jwt && (await getAuthTokenId(jwt));
+  const userId = jwt && (await verifyAndDecodeToken(jwt));
 
   if (userId) {
     const user = await prisma.user.findUnique({

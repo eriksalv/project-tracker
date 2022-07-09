@@ -33,20 +33,14 @@ function signToken(id: number) {
   return jwt.sign({ id }, jwtSecret, { expiresIn: "30m" });
 }
 
-export async function getAuthTokenId(token: string) {
-  if (verifyToken(token)) {
-    return await redis.get(token);
-  }
-  return null;
-}
-
-export function verifyToken(token: string) {
+export async function verifyAndDecodeToken(token: string) {
   try {
-    const userId = verify(token, jwtSecret);
-    return userId;
+    verify(token, jwtSecret);
   } catch (error) {
     return null;
   }
+
+  return await redis.get(token);
 }
 
 export async function destroySession(token: string, res: NextApiResponse) {

@@ -1,0 +1,51 @@
+version: "3.9"
+services:
+  nextapp:
+    ports:
+      - "3000:3000"
+    build:
+      context: ./
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./:/app
+      - /app/node_modules
+    env_file:
+      - .docker.dev.env
+    stdin_open: true
+    tty: true
+    restart: always
+    depends_on:
+      - postgres
+    container_name: nextapp
+
+  postgres:
+    image: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+      POSTGRES_HOST: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - db:/var/lib/postgresql/data
+    depends_on:
+      - redis
+    container_name: postgres
+
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
+    environment:
+      REDIS_PASSWORD: redis
+      REDIS_USER: default
+    volumes:
+      - redis:/data
+    container_name: redis
+
+volumes:
+  db:
+    driver: local
+  redis:
+    driver: local

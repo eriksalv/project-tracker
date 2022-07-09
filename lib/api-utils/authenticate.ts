@@ -1,6 +1,6 @@
 import prisma from "../prisma";
 import { NextApiRequest, NextApiResponse } from "next";
-import { destroySession, verifyToken } from "./auth";
+import { destroySession, verifyAndDecodeToken } from "./auth";
 import { JwtPayload } from "jsonwebtoken";
 
 export default async function authenticate(
@@ -15,9 +15,7 @@ export default async function authenticate(
     return false;
   }
 
-  const result = verifyToken(jwt) as JwtPayload | null;
-
-  const id = result?.id;
+  const id = await verifyAndDecodeToken(jwt);
 
   if (!id) {
     await destroySession(jwt, res);
@@ -25,7 +23,7 @@ export default async function authenticate(
   }
 
   const user = await prisma.user.findUnique({
-    where: { id },
+    where: { id: +id },
     select: {
       email: true,
       id: true,
