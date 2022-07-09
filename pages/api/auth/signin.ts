@@ -1,14 +1,14 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import {
   createSession,
+  destroySession,
   getAuthTokenId,
   verifyPassword,
-} from "../../../lib/auth";
+} from "../../../lib/api-utils/auth";
 import prisma from "../../../lib/prisma";
 import { LoginForm, loginSchema } from "../../../lib/validation/signin";
 import validate from "../../../lib/validation/validate";
 import { AuthResponse } from "../../../lib/queries/auth";
-import cookie from "cookie";
 
 export default async function handler(
   req: NextApiRequest,
@@ -48,7 +48,6 @@ async function handlePOST(
 
     return res.status(200).json({
       message: "Already signed in",
-      accessToken: { success: true, userId: +userId, token: jwt },
       user: {
         id: user.id,
         username: user.username,
@@ -59,16 +58,7 @@ async function handlePOST(
   }
 
   if (jwt && !userId) {
-    res.setHeader(
-      "Set-Cookie",
-      cookie.serialize("token", "", {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        expires: new Date(0),
-        sameSite: "strict",
-        path: "/",
-      })
-    );
+    await destroySession(jwt, res);
     return res.status(401).json({ message: "Unauthorized" });
   }
 
@@ -93,18 +83,7 @@ async function handlePOST(
   }
 
   if (user && (await verifyPassword(password, user.password))) {
-    const accessToken = await createSession(user);
-
-    res.setHeader(
-      "Set-Cookie",
-      cookie.serialize("token", accessToken.token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        maxAge: 60 * 60 * 24 * 30,
-        sameSite: "strict",
-        path: "/",
-      })
-    );
+    await createSession(user, res);
 
     return res.status(200).json({
       message: "Logged in successfully",

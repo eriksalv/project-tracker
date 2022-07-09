@@ -5,31 +5,23 @@ import { devtools } from "zustand/middleware";
 
 export interface AuthState {
   user: User | null;
-  accessToken: {
-    success: boolean;
-    userId: number;
-    token: string;
-  } | null;
   signin: (data: AuthResponse) => void;
   logout: () => void;
-  isAuthenticated: () => boolean;
 }
 
 const getDefaultInitialState = () => ({
   user: null,
-  accessToken: null,
 });
 
 const useAuthStore = create<AuthState, any>(
   devtools((set, get) => ({
     ...getDefaultInitialState(),
     signin: (data) => {
-      set({ user: data.user, accessToken: data.accessToken });
+      set({ user: data.user });
     },
     logout: () => {
-      set({ user: null, accessToken: null });
+      set({ user: null });
     },
-    isAuthenticated: () => !!get().accessToken,
   }))
 );
 

@@ -1,9 +1,8 @@
 import prisma from "../../../lib/prisma";
 import { NextApiRequest, NextApiResponse } from "next";
-import { createSession, hashPassword } from "../../../lib/auth";
+import { createSession, hashPassword } from "../../../lib/api-utils/auth";
 import { RegisterForm, registerSchema } from "../../../lib/validation/signup";
 import validate from "../../../lib/validation/validate";
-import { serialize } from "cookie";
 
 export default async function handler(
   req: NextApiRequest,
@@ -46,18 +45,7 @@ async function handlePOST(req: NextApiRequest, res: NextApiResponse) {
       data: { email, username, name, password: hashedPassword },
     });
 
-    const accessToken = await createSession(newUser);
-
-    res.setHeader(
-      "Set-Cookie",
-      serialize("token", accessToken.token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        maxAge: 60 * 60 * 24 * 30,
-        sameSite: "strict",
-        path: "/",
-      })
-    );
+    await createSession(newUser, res);
 
     return res.status(201).json({
       message: "User created successfully",

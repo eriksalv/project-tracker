@@ -1,6 +1,6 @@
 import prisma from "../prisma";
 import { NextApiRequest, NextApiResponse } from "next";
-import { verifyToken } from "../auth";
+import { verifyToken } from "./auth";
 import { JwtPayload } from "jsonwebtoken";
 
 export default async function authenticate(req: NextApiRequest) {
