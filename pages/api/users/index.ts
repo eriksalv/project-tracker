@@ -1,9 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
+import { userArgs } from "../../../lib/db-utils";
 import prisma from "../../../lib/prisma";
-
-type Data = {
-  name: string;
-};
 
 export default async function handler(
   req: NextApiRequest,
@@ -11,20 +8,15 @@ export default async function handler(
 ) {
   switch (req.method) {
     case "GET":
-      await handleGET(res);
-      break;
+      return await handleGET(res);
     default:
       return res.status(405).json({
-        user: null,
-        errors: null,
         message: `The HTTP method ${req.method} is not supported for this route.`,
       });
   }
 }
 
 async function handleGET(res: NextApiResponse) {
-  const users = await prisma.user.findMany({
-    select: { email: true, id: true, username: true },
-  });
+  const users = await prisma.user.findMany(userArgs);
   return res.status(200).json(users);
 }

@@ -10,8 +10,7 @@ export default async function handler(
 ) {
   switch (req.method) {
     case "POST":
-      await handlePOST(req, res);
-      break;
+      return await handlePOST(req, res);
     default:
       return res.status(405).json({
         message: `The HTTP method ${req.method} is not supported for this route.`,

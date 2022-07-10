@@ -1,6 +1,7 @@
 import { Prisma } from "@prisma/client";
 import { NextApiRequest, NextApiResponse, NextApiHandler } from "next";
 import authenticate from "../../../../lib/api-utils/authenticate";
+import { userArgs } from "../../../../lib/db-utils";
 import prisma from "../../../../lib/prisma";
 import { UserResponse } from "../../../../lib/queries/users";
 import {
@@ -15,11 +16,9 @@ export default async function handler(
 ) {
   switch (req.method) {
     case "GET":
-      await handleGET(req, res);
-      break;
+      return await handleGET(req, res);
     case "PUT":
-      await handlePUT(req, res);
-      break;
+      return await handlePUT(req, res);
     default:
       return res.status(405).json({
         message: `The HTTP method ${req.method} is not supported for this route.`,
@@ -63,12 +62,7 @@ async function handlePUT(
       data: {
         name,
       },
-      select: {
-        id: true,
-        username: true,
-        email: true,
-        name: true,
-      },
+      ...userArgs,
     });
 
     return res.status(200).json({

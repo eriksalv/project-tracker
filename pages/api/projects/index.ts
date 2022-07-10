@@ -1,34 +1,32 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import authenticate from "../../../lib/api-utils/authenticate";
 import prisma from "../../../lib/prisma";
+import { ProjectResponse } from "../../../lib/queries/projects";
 import {
   CreateProjectForm,
   createProjectSchema,
 } from "../../../lib/validation/project";
 import validate from "../../../lib/validation/validate";
+import { projectArgs } from "../../../lib/db-utils";
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse<ProjectResponse>
 ) {
   switch (req.method) {
     case "GET":
-      await handleGET(res);
-      break;
+      return await handleGET(res);
     case "POST":
-      await handlePOST(req, res);
-      break;
+      return await handlePOST(req, res);
     default:
       return res.status(405).json({
-        user: null,
-        errors: null,
         message: `The HTTP method ${req.method} is not supported for this route.`,
       });
   }
 }
 
 async function handleGET(res: NextApiResponse) {
-  const projects = await prisma.project.findMany();
+  const projects = await prisma.project.findMany(projectArgs);
   return res.status(200).json(projects);
 }
 
@@ -61,6 +59,7 @@ async function handlePOST(req: NextApiRequest, res: NextApiResponse) {
           },
         },
       },
+      ...projectArgs,
     });
 
     return res

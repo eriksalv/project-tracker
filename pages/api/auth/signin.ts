@@ -9,6 +9,7 @@ import prisma from "../../../lib/prisma";
 import { LoginForm, loginSchema } from "../../../lib/validation/signin";
 import validate from "../../../lib/validation/validate";
 import { AuthResponse } from "../../../lib/queries/auth";
+import { userArgs } from "../../../lib/db-utils";
 
 export default async function handler(
   req: NextApiRequest,
@@ -16,8 +17,7 @@ export default async function handler(
 ) {
   switch (req.method) {
     case "POST":
-      await handlePOST(req, res);
-      break;
+      return await handlePOST(req, res);
     default:
       return res.status(405).json({
         message: `The HTTP method ${req.method} is not supported for this route.`,
@@ -40,6 +40,7 @@ async function handlePOST(
       where: {
         id: +userId,
       },
+      ...userArgs,
     });
 
     if (!user) {
@@ -48,12 +49,7 @@ async function handlePOST(
 
     return res.status(200).json({
       message: "Already signed in",
-      user: {
-        id: user.id,
-        username: user.username,
-        name: user.name,
-        email: user.email,
-      },
+      user,
     });
   }
 

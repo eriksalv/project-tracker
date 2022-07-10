@@ -1,6 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import authenticate from "../../../lib/api-utils/authenticate";
+import { projectArgs } from "../../../lib/db-utils";
 import prisma from "../../../lib/prisma";
+import { ProjectResponse } from "../../../lib/queries/projects";
 import {
   UpdateProjectForm,
   updateProjectSchema,
@@ -9,22 +11,17 @@ import validate from "../../../lib/validation/validate";
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse<ProjectResponse>
 ) {
   switch (req.method) {
     case "GET":
-      await handleGET(req, res);
-      break;
+      return await handleGET(req, res);
     case "PUT":
-      await handlePUT(req, res);
-      break;
+      return await handlePUT(req, res);
     case "DELETE":
-      await handleDELETE(req, res);
-      break;
+      return await handleDELETE(req, res);
     default:
       return res.status(405).json({
-        user: null,
-        errors: null,
         message: `The HTTP method ${req.method} is not supported for this route.`,
       });
   }
@@ -37,6 +34,7 @@ async function handleGET(req: NextApiRequest, res: NextApiResponse) {
     where: {
       id: +id!,
     },
+    ...projectArgs,
   });
 
   if (!project) {
@@ -59,7 +57,9 @@ async function handlePUT(req: NextApiRequest, res: NextApiResponse) {
 
   const { id } = req.query;
 
-  const project = await prisma.project.findUnique({ where: { id: +id! } });
+  const project = await prisma.project.findUnique({
+    where: { id: +id! },
+  });
 
   if (!project) {
     return res.status(404).json({
@@ -92,6 +92,8 @@ async function handlePUT(req: NextApiRequest, res: NextApiResponse) {
         title,
         description,
       },
+
+      ...projectArgs,
     });
 
     return res.status(200).json(project);

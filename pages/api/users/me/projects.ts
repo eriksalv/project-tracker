@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import authenticate from "../../../../lib/api-utils/authenticate";
+import { projectArgs } from "../../../../lib/db-utils";
 import prisma from "../../../../lib/prisma";
 
 export default async function handler(
@@ -8,8 +9,7 @@ export default async function handler(
 ) {
   switch (req.method) {
     case "GET":
-      await handleGET(req, res);
-      break;
+      return await handleGET(req, res);
     default:
       return res.status(405).json({
         message: `The HTTP method ${req.method} is not supported for this route.`,
@@ -28,6 +28,7 @@ async function handleGET(req: NextApiRequest, res: NextApiResponse) {
         id: user.id,
       },
     },
+    ...projectArgs,
   });
 
   return res.status(200).json({ projects });
