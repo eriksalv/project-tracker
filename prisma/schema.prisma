@@ -25,9 +25,11 @@ model User {
 model Project {
   id Int @default(autoincrement()) @id
   title String @db.VarChar(255)
+  description String? @db.Text
   owner User @relation(fields: [ownerId], references: [id])
   ownerId Int @map(name: "owner_id")
   createdAt DateTime @default(now()) @map(name: "created_at")
   updatedAt DateTime @updatedAt @map(name: "updated_at")
+  @@unique([ownerId, title])
   @@map(name: "project")
 }

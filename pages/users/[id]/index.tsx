@@ -9,7 +9,7 @@ const User = () => {
   const id = router.query.id;
 
   const { data, status } = useQuery<UserResponse, Error>(
-    ["profile", id],
+    ["user", id],
     () => getUser(+id! as number),
     {
       enabled: id !== undefined,

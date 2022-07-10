@@ -28,13 +28,9 @@ export default async function handler(
 }
 
 async function handleGET(req: NextApiRequest, res: NextApiResponse) {
-  const authorized = await authenticate(req, res);
+  const user = await authenticate(req, res);
 
-  if (!authorized) {
-    return res.status(401).json({ message: "Not authorized" });
-  }
-
-  const { user } = req.body;
+  if (!user) return res.status(401).json({ message: "You must be logged in" });
 
   return res.status(200).json({ user });
 }
@@ -43,13 +39,11 @@ async function handlePUT(
   req: NextApiRequest,
   res: NextApiResponse<UserResponse>
 ) {
-  const authorized = await authenticate(req, res);
+  const user = await authenticate(req, res);
 
-  if (!authorized) {
-    return res.status(401).json({ message: "Unauthorized" });
-  }
+  if (!user) return res.status(401).json({ message: "You must be logged in" });
 
-  const { id } = req.body.user;
+  const { id } = user;
 
   const { body } = req;
 
