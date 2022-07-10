@@ -7,5 +7,5 @@ export interface UpdateProfileForm {
 export const updateProfileSchema: yup.SchemaOf<UpdateProfileForm> = yup
   .object()
   .shape({
-    name: yup.string().nullable(true),
+    name: yup.string().trim().nullable(true),
   });

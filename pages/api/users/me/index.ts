@@ -1,13 +1,13 @@
 import { Prisma } from "@prisma/client";
 import { NextApiRequest, NextApiResponse, NextApiHandler } from "next";
-import authenticate from "../../../lib/api-utils/authenticate";
-import prisma from "../../../lib/prisma";
-import { UserResponse } from "../../../lib/queries/users";
+import authenticate from "../../../../lib/api-utils/authenticate";
+import prisma from "../../../../lib/prisma";
+import { UserResponse } from "../../../../lib/queries/users";
 import {
   UpdateProfileForm,
   updateProfileSchema,
-} from "../../../lib/validation/update-profile";
-import validate from "../../../lib/validation/validate";
+} from "../../../../lib/validation/update-profile";
+import validate from "../../../../lib/validation/validate";
 
 export default async function handler(
   req: NextApiRequest,

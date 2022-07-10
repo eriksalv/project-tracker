@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import prisma from "../../../lib/prisma";
-import { UserResponse } from "../../../lib/queries/users";
+import prisma from "../../../../lib/prisma";
+import { UserResponse } from "../../../../lib/queries/users";
 
 export default async function handler(
   req: NextApiRequest,

@@ -1,7 +1,10 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import authenticate from "../../../lib/api-utils/authenticate";
 import prisma from "../../../lib/prisma";
-import { ProjectForm, projectSchema } from "../../../lib/validation/project";
+import {
+  CreateProjectForm,
+  createProjectSchema,
+} from "../../../lib/validation/project";
 import validate from "../../../lib/validation/validate";
 
 export default async function handler(
@@ -39,18 +42,19 @@ async function handlePOST(req: NextApiRequest, res: NextApiResponse) {
   }
 
   const { body } = req;
-  const { data, errors } = await validate(projectSchema, body);
+  const { data, errors } = await validate(createProjectSchema, body);
 
   if (errors) {
     return res.status(422).json({ errors });
   }
 
-  const { title } = data as ProjectForm;
+  const { title, description } = data as CreateProjectForm;
 
   try {
     const project = await prisma.project.create({
       data: {
         title,
+        description,
         owner: {
           connect: {
             id: user.id,
