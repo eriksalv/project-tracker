@@ -50,7 +50,7 @@ const Header: React.FC<Props> = ({ theme, opened, setOpened }) => {
 
         <Group>
           {user ? (
-            <ProfileMenu username={user.username} />
+            <ProfileMenu username={user.username} id={user.id} />
           ) : (
             <Group>
               <Link href="/login" passHref>

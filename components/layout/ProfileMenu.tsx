@@ -5,7 +5,10 @@ import { useMutation } from "react-query";
 import { signout } from "../../lib/queries/auth";
 import useAuthStore from "../../store/auth";
 
-const ProfileMenu: React.FC<{ username: string }> = ({ username }) => {
+const ProfileMenu: React.FC<{ id: number; username: string }> = ({
+  id,
+  username,
+}) => {
   const { logout } = useAuthStore();
 
   const { mutate } = useMutation(signout, {
@@ -29,7 +32,7 @@ const ProfileMenu: React.FC<{ username: string }> = ({ username }) => {
       }
     >
       <MenuLabel>Signed in as {username}</MenuLabel>
-      <Menu.Item component={NextLink} href={`/${username}`}>
+      <Menu.Item component={NextLink} href={`/users/${id}`}>
         Your profile
       </Menu.Item>
 

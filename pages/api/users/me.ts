@@ -28,7 +28,7 @@ export default async function handler(
 }
 
 async function handleGET(req: NextApiRequest, res: NextApiResponse) {
-  const authorized = await authenticate(req);
+  const authorized = await authenticate(req, res);
 
   if (!authorized) {
     return res.status(401).json({ message: "Not authorized" });
@@ -43,7 +43,7 @@ async function handlePUT(
   req: NextApiRequest,
   res: NextApiResponse<UserResponse>
 ) {
-  const authorized = await authenticate(req);
+  const authorized = await authenticate(req, res);
 
   if (!authorized) {
     return res.status(401).json({ message: "Unauthorized" });

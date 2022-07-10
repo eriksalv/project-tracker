@@ -9,8 +9,8 @@ export interface UserResponse {
   errors?: string | string[];
 }
 
-export const getUser = async (username: string): Promise<UserResponse> => {
-  const res = await axios.get(`/api/users/${username}`);
+export const getUser = async (id: number): Promise<UserResponse> => {
+  const res = await axios.get(`/api/users/${id}`);
   return res.data;
 };
 

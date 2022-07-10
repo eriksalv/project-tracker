@@ -1,19 +1,18 @@
 import React from "react";
 import { useQuery } from "react-query";
-import { getUser, UserResponse } from "../../lib/queries/users";
+import { getUser, UserResponse } from "../../../lib/queries/users";
 import { useRouter } from "next/router";
 
-const Profile = () => {
+const User = () => {
   const router = useRouter();
 
-  const username =
-    typeof router.query?.username === "string" ? router.query.username : "";
+  const id = router.query.id;
 
   const { data, status } = useQuery<UserResponse, Error>(
-    ["profile", username],
-    () => getUser(username),
+    ["profile", id],
+    () => getUser(+id! as number),
     {
-      enabled: username.length > 0,
+      enabled: id !== undefined,
     }
   );
 
@@ -41,4 +40,4 @@ const Profile = () => {
 
 // export const getServerSideProps = async () => {};
 
-export default Profile;
+export default User;

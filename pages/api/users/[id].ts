@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import prisma from "../../../../lib/prisma";
-import { UserResponse } from "../../../../lib/queries/users";
+import prisma from "../../../lib/prisma";
+import { UserResponse } from "../../../lib/queries/users";
 
 export default async function handler(
   req: NextApiRequest,
@@ -21,12 +21,12 @@ async function handleGET(
   req: NextApiRequest,
   res: NextApiResponse<UserResponse>
 ) {
-  const { username } = req.query;
+  const { id } = req.query;
 
   try {
     const user = await prisma.user.findUnique({
       where: {
-        username: username as string,
+        id: +id!,
       },
       select: {
         email: true,
