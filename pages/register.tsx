@@ -17,6 +17,8 @@ const RegisterPage = () => {
 
   const { signin } = useAuthStore();
 
+  const router = useRouter();
+
   const registerMutation = useMutation(
     async (data: RegisterForm) => await signup(data),
     {
@@ -30,8 +32,6 @@ const RegisterPage = () => {
       },
     }
   );
-
-  const router = useRouter();
 
   const onSubmit = async (data: RegisterForm) => {
     registerMutation.mutate(data);

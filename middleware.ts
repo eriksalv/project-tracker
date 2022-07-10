@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export default function middleware(req: NextRequest) {
-  if (req.nextUrl.pathname.startsWith("/settings")) {
+  if (
+    req.nextUrl.pathname.startsWith("/settings") ||
+    req.nextUrl.pathname.startsWith("/new-project")
+  ) {
     return requireAuth(req);
   }
 
