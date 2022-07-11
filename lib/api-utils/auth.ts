@@ -2,7 +2,6 @@ import { User } from "@prisma/client";
 import { hash, compare, genSalt } from "bcryptjs";
 import jwt from "jsonwebtoken";
 import redis from "../redis";
-import { verify } from "jsonwebtoken";
 import setCookie from "./cookie";
 import { NextApiResponse } from "next";
 
@@ -30,16 +29,10 @@ async function setToken(token: string, id: number) {
 }
 
 function signToken(id: number) {
-  return jwt.sign({ id }, jwtSecret, { expiresIn: "30m" });
+  return jwt.sign({ id }, jwtSecret);
 }
 
 export async function verifyAndDecodeToken(token: string) {
-  try {
-    verify(token, jwtSecret);
-  } catch (error) {
-    return null;
-  }
-
   return await redis.get(token);
 }
 

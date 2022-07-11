@@ -1,0 +1,19 @@
+.ownerProject {
+  display: flex;
+}
+
+.ownerProject div {
+  cursor: pointer;
+}
+
+.ownerProject div:hover {
+  text-decoration: underline;
+}
+
+.ownerProject div:nth-child(1) {
+  margin-right: 5px;
+}
+
+.ownerProject div:nth-child(2) {
+  margin-left: 5px;
+}

@@ -22,10 +22,13 @@ const Navbar: React.FC<Props> = ({ opened }) => {
       hidden={!opened}
       width={{ sm: 200, lg: 300 }}
     >
+      <MantineNavbar.Section>
+        <Text>{project.title}</Text>
+      </MantineNavbar.Section>
       <MantineNavbar.Section grow mt="lg">
         <MainLink
           route={`/projects/${project.id}`}
-          label="Board"
+          label="Issue board"
           color="green"
           icon={<ListDetails />}
         />
@@ -35,9 +38,6 @@ const Navbar: React.FC<Props> = ({ opened }) => {
           color="blue"
           icon={<Settings />}
         />
-      </MantineNavbar.Section>
-      <MantineNavbar.Section>
-        <Text>Title</Text>
       </MantineNavbar.Section>
     </MantineNavbar>
   );

@@ -17,6 +17,7 @@ model User {
   name String? 
   password String
   projects Project[]
+  starredProjects Star[]
   createdAt DateTime @default(now()) @map(name: "created_at")
   updatedAt DateTime @updatedAt @map(name: "updated_at")
   @@map(name: "user")
@@ -29,8 +30,21 @@ model Project {
   owner User @relation(fields: [ownerId], references: [id])
   ownerId Int @map(name: "owner_id")
   public Boolean @default(true)
+  starredBy Star[]
   createdAt DateTime @default(now()) @map(name: "created_at")
   updatedAt DateTime @updatedAt @map(name: "updated_at")
   @@unique([ownerId, title])
   @@map(name: "project")
+}
+
+model Star {
+  user User @relation(fields: [userId], references: [id])
+  userId Int @map(name: "user_id")
+  project Project @relation(fields: [projectId], references: [id])
+  projectId Int @map(name: "project_id")
+  createdAt DateTime @default(now()) @map(name: "created_at")
+  updatedAt DateTime @updatedAt @map(name: "updated_at")
+  
+  @@id([userId, projectId])
+  @@map(name: "star")
 }

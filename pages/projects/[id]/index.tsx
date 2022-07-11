@@ -1,9 +1,12 @@
-import { Loader } from "@mantine/core";
+import { ActionIcon, Group, Loader, Text, Title } from "@mantine/core";
 import { useRouter } from "next/router";
 import React from "react";
 import { useQuery } from "react-query";
 import { getProject, ProjectResponse } from "../../../lib/queries/projects";
 import useProjectStore from "../../../store/project";
+import { Star } from "tabler-icons-react";
+
+import classes from "../../../styles/project.module.css";
 
 const Project = () => {
   const router = useRouter();
@@ -33,10 +36,20 @@ const Project = () => {
     const { project } = data;
 
     return (
-      <div>
-        <h1>{project?.title}</h1>
-        <h1>{project?.description}</h1>
-      </div>
+      <section>
+        <Text className={classes.ownerProject}>
+          <div onClick={() => router.push(`/users/${project?.owner.id}`)}>
+            {project?.owner.username}
+          </div>
+          /<div onClick={() => router.reload()}>{project?.title}</div>
+        </Text>
+        <Group position="apart">
+          <Title order={1}>{project?.title}</Title>
+          <ActionIcon variant="light" radius="xl">
+            <Star />
+          </ActionIcon>
+        </Group>
+      </section>
     );
   }
 
