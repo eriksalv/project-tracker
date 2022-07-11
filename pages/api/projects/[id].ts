@@ -81,7 +81,7 @@ async function handlePUT(req: NextApiRequest, res: NextApiResponse) {
     return res.status(422).json({ errors });
   }
 
-  const { title, description } = data as UpdateProjectForm;
+  const { title, description, public: isPublic } = data as UpdateProjectForm;
 
   try {
     const project = await prisma.project.update({
@@ -91,6 +91,7 @@ async function handlePUT(req: NextApiRequest, res: NextApiResponse) {
       data: {
         title,
         description,
+        public: isPublic,
       },
 
       ...projectArgs,

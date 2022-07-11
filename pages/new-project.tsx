@@ -1,7 +1,15 @@
 import { yupResolver } from "@hookform/resolvers/yup";
-import { Button, Textarea, TextInput } from "@mantine/core";
+import {
+  Button,
+  Radio,
+  RadioGroup,
+  SegmentedControl,
+  Select,
+  Textarea,
+  TextInput,
+} from "@mantine/core";
 import { useRouter } from "next/router";
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useMutation } from "react-query";
 import { createProject } from "../lib/queries/projects";
@@ -11,6 +19,8 @@ import {
 } from "../lib/validation/project";
 
 const NewProject = () => {
+  const [isPublic, setIsPublic] = useState(true);
+
   const formOptions = { resolver: yupResolver(createProjectSchema) };
 
   const { register, handleSubmit, reset, formState } =
@@ -54,6 +64,27 @@ const NewProject = () => {
         autosize
         minRows={2}
         maxRows={4}
+      />
+
+      <Radio
+        sx={{ marginBottom: "1rem", marginTop: "1rem" }}
+        value="true"
+        label="Public"
+        datatype="boolean"
+        {...register("public")}
+        checked={isPublic}
+        onChange={() => setIsPublic(true)}
+        required
+      />
+      <Radio
+        sx={{ marginBottom: "1rem", marginTop: "1rem" }}
+        value="false"
+        label="Private"
+        datatype="boolean"
+        {...register("public")}
+        checked={!isPublic}
+        onChange={() => setIsPublic(false)}
+        required
       />
 
       <Button

@@ -46,13 +46,14 @@ async function handlePOST(req: NextApiRequest, res: NextApiResponse) {
     return res.status(422).json({ errors });
   }
 
-  const { title, description } = data as CreateProjectForm;
+  const { title, description, public: isPublic } = data as CreateProjectForm;
 
   try {
     const project = await prisma.project.create({
       data: {
         title,
         description,
+        public: isPublic,
         owner: {
           connect: {
             id: user.id,
