@@ -19,15 +19,14 @@ const Project = () => {
       onSuccess: (data) => {
         setProject(data?.project!);
       },
+      onError: () => {
+        router.replace("/404");
+      },
     }
   );
 
   if (status === "loading" || (!data?.project && status === "idle")) {
     return <Loader />;
-  }
-
-  if (status === "error") {
-    return <h1>Error</h1>;
   }
 
   if (status === "success") {
