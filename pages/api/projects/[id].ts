@@ -43,7 +43,7 @@ async function handleGET(req: NextApiRequest, res: NextApiResponse) {
     });
   }
 
-  return res.status(200).json(project);
+  return res.status(200).json({ project });
 }
 
 async function handlePUT(req: NextApiRequest, res: NextApiResponse) {
@@ -97,7 +97,7 @@ async function handlePUT(req: NextApiRequest, res: NextApiResponse) {
       ...projectArgs,
     });
 
-    return res.status(200).json(project);
+    return res.status(200).json({ project });
   } catch (e) {
     return res.status(500).json({
       message: "Error updating project",

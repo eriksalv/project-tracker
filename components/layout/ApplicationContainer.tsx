@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { AppShell, Footer, Progress, useMantineTheme } from "@mantine/core";
 import Header from "./Header";
-import Navbar from "./Navbar";
+import Navbar from "./navbars/ProjectNavbar";
 import useAuthStore from "../../store/auth";
 import axios from "axios";
 import { useMutation } from "react-query";
@@ -67,12 +67,18 @@ const ApplicationContainer: React.FC<{ children: JSX.Element }> = ({
       navbarOffsetBreakpoint="sm"
       asideOffsetBreakpoint="sm"
       fixed
-      navbar={<Navbar opened={opened} />}
-      footer={
-        <Footer height={60} p="md">
-          Application footer
-        </Footer>
+      navbar={
+        router.asPath.match(/\/projects\/.+/) ? (
+          <Navbar opened={opened} />
+        ) : (
+          <></>
+        )
       }
+      // footer={
+      //   <Footer height={60} p="md">
+      //     Application footer
+      //   </Footer>
+      // }
       header={<Header theme={theme} opened={opened} setOpened={setOpened} />}
     >
       <ProgressBar isAnimating={isAnimating} />

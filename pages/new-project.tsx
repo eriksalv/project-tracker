@@ -1,17 +1,9 @@
 import { yupResolver } from "@hookform/resolvers/yup";
-import {
-  Button,
-  Radio,
-  RadioGroup,
-  SegmentedControl,
-  Select,
-  Textarea,
-  TextInput,
-} from "@mantine/core";
+import { Button, Radio, Textarea, TextInput } from "@mantine/core";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import { useMutation } from "react-query";
+import { useMutation, useQueryClient } from "react-query";
 import { createProject } from "../lib/queries/projects";
 import {
   CreateProjectForm,
@@ -20,6 +12,8 @@ import {
 
 const NewProject = () => {
   const [isPublic, setIsPublic] = useState(true);
+
+  const queryClient = useQueryClient();
 
   const formOptions = { resolver: yupResolver(createProjectSchema) };
 
@@ -33,6 +27,7 @@ const NewProject = () => {
     async (data: CreateProjectForm) => await createProject(data),
     {
       onSuccess: (data) => {
+        queryClient.setQueryData(["projects", data.project?.id], data.project!);
         router.replace(`/projects/${data.project?.id}`);
       },
       onError: () => {
