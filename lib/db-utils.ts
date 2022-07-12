@@ -14,3 +14,15 @@ export const projectArgs: Prisma.ProjectArgs = {
     owner: userArgs,
   },
 };
+
+export const projectWithBoardArgs: Prisma.ProjectArgs = {
+  include: {
+    owner: userArgs,
+    board: {
+      select: {
+        id: true,
+        issues: true,
+      },
+    },
+  },
+};

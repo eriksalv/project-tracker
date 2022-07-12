@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import authenticate from "../../../lib/api-utils/authenticate";
-import { projectArgs } from "../../../lib/db-utils";
+import { projectArgs, projectWithBoardArgs } from "../../../lib/db-utils";
 import prisma from "../../../lib/prisma";
 import { ProjectResponse } from "../../../lib/queries/projects";
 import {
@@ -34,7 +34,7 @@ async function handleGET(req: NextApiRequest, res: NextApiResponse) {
     where: {
       id: +id!,
     },
-    ...projectArgs,
+    ...projectWithBoardArgs,
   });
 
   if (!project) {
@@ -93,7 +93,6 @@ async function handlePUT(req: NextApiRequest, res: NextApiResponse) {
         description,
         public: isPublic,
       },
-
       ...projectArgs,
     });
 

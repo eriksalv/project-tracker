@@ -7,7 +7,12 @@ import {
   createProjectSchema,
 } from "../../../lib/validation/project";
 import validate from "../../../lib/validation/validate";
-import { projectArgs } from "../../../lib/db-utils";
+import {
+  projectArgs,
+  projectWithBoardArgs,
+  userArgs,
+} from "../../../lib/db-utils";
+import { Prisma } from "@prisma/client";
 
 export default async function handler(
   req: NextApiRequest,
@@ -27,7 +32,7 @@ export default async function handler(
 
 async function handleGET(res: NextApiResponse) {
   const projects = await prisma.project.findMany(projectArgs);
-  return res.status(200).json(projects);
+  return res.status(200).json({ projects });
 }
 
 async function handlePOST(req: NextApiRequest, res: NextApiResponse) {
@@ -59,14 +64,37 @@ async function handlePOST(req: NextApiRequest, res: NextApiResponse) {
             id: user.id,
           },
         },
+        board: {
+          create: {
+            contributors: {
+              create: [
+                {
+                  user: {
+                    connect: {
+                      id: user.id,
+                    },
+                  },
+                },
+              ],
+            },
+          },
+        },
       },
-      ...projectArgs,
+      ...projectWithBoardArgs,
     });
 
     return res
       .status(201)
       .json({ project, message: "Project created successfully" });
   } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      if (error.code === "P2002") {
+        return res.status(409).json({
+          message: "You already have a project with this title.",
+        });
+      }
+    }
+
     return res.status(200).json({
       message: "Something went wrong",
     });
