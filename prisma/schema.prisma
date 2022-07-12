@@ -11,40 +11,114 @@ datasource db {
 }
 
 model User {
-  id Int @default(autoincrement()) @id
-  email String @db.VarChar(255) @unique
-  username String @unique
-  name String? 
-  password String
-  projects Project[]
+  id              Int            @id @default(autoincrement())
+  email           String         @unique @db.VarChar(255)
+  username        String         @unique
+  name            String?
+  password        String
+  projects        Project[]
   starredProjects Star[]
-  createdAt DateTime @default(now()) @map(name: "created_at")
-  updatedAt DateTime @updatedAt @map(name: "updated_at")
+  contributingTo  Contribution[]
+  assignedIssues  Issue[]
+  comments        Comment[]
+  createdAt       DateTime       @default(now()) @map(name: "created_at")
+  updatedAt       DateTime       @updatedAt @map(name: "updated_at")
+
   @@map(name: "user")
 }
 
 model Project {
-  id Int @default(autoincrement()) @id
-  title String @db.VarChar(255)
-  description String? @db.Text
-  owner User @relation(fields: [ownerId], references: [id])
-  ownerId Int @map(name: "owner_id")
-  public Boolean @default(true)
-  starredBy Star[]
-  createdAt DateTime @default(now()) @map(name: "created_at")
-  updatedAt DateTime @updatedAt @map(name: "updated_at")
+  id          Int      @id @default(autoincrement())
+  title       String   @db.VarChar(255)
+  description String?  @db.Text
+  owner       User     @relation(fields: [ownerId], references: [id])
+  ownerId     Int      @map(name: "owner_id")
+  public      Boolean  @default(true)
+  starredBy   Star[]
+  board       Board?
+  createdAt   DateTime @default(now()) @map(name: "created_at")
+  updatedAt   DateTime @updatedAt @map(name: "updated_at")
+
   @@unique([ownerId, title])
   @@map(name: "project")
 }
 
 model Star {
-  user User @relation(fields: [userId], references: [id])
-  userId Int @map(name: "user_id")
-  project Project @relation(fields: [projectId], references: [id])
-  projectId Int @map(name: "project_id")
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int      @map(name: "user_id")
+  project   Project  @relation(fields: [projectId], references: [id])
+  projectId Int      @map(name: "project_id")
   createdAt DateTime @default(now()) @map(name: "created_at")
   updatedAt DateTime @updatedAt @map(name: "updated_at")
-  
+
   @@id([userId, projectId])
   @@map(name: "star")
+}
+
+model Board {
+  id           Int            @id @default(autoincrement())
+  project      Project        @relation(fields: [projectId], references: [id])
+  projectId    Int            @unique @map(name: "project_id")
+  issues       Issue[]
+  contributors Contribution[]
+
+  createdAt DateTime @default(now()) @map(name: "created_at")
+  updatedAt DateTime @updatedAt @map(name: "updated_at")
+
+  @@map(name: "board")
+}
+
+model Issue {
+  id          Int       @id @default(autoincrement())
+  board       Board     @relation(fields: [boardId], references: [id])
+  boardId     Int       @map(name: "board_id")
+  title       String    @db.VarChar(255)
+  description String?   @db.Text
+  priority    Priority  @default(LOW)
+  status      Status    @default(OPEN)
+  assignee    User?     @relation(fields: [assigneeId], references: [id])
+  assigneeId  Int       @map(name: "assignee_id")
+  comments    Comment[]
+  createdAt   DateTime  @default(now()) @map(name: "created_at")
+  updatedAt   DateTime  @updatedAt @map(name: "updated_at")
+
+  @@unique([boardId, title])
+  @@map(name: "issue")
+}
+
+model Contribution {
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int      @map(name: "user_id")
+  board     Board    @relation(fields: [boardId], references: [id])
+  boardId   Int      @map(name: "board_id")
+  createdAt DateTime @default(now()) @map(name: "created_at")
+  updatedAt DateTime @updatedAt @map(name: "updated_at")
+
+  @@id([userId, boardId])
+  @@map(name: "contribution")
+}
+
+model Comment {
+  issue     Issue    @relation(fields: [issueId], references: [id])
+  issueId   Int      @map(name: "issue_id")
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int      @map(name: "user_id")
+  text      String   @db.Text
+  createdAt DateTime @default(now()) @map(name: "created_at")
+  updatedAt DateTime @updatedAt @map(name: "updated_at")
+
+  @@id([issueId, userId])
+  @@map(name: "comment")
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum Status {
+  OPEN
+  IN_PROGRESS
+  DONE
 }
