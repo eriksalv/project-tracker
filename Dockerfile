@@ -10,6 +10,11 @@ RUN yarn install
 
 COPY . .
 
+RUN npx prisma generate
+
 EXPOSE 3000
 
-CMD ["yarn", "run", "dev"]
+# Prisma Studio
+EXPOSE 5555
+
+CMD ["yarn", "dev"]

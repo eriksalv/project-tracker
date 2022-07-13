@@ -1,11 +1,12 @@
-version: "3.9"
+version: "3.8"
 services:
   nextapp:
     ports:
       - "3000:3000"
+      - "5555:5555"
     build:
       context: ./
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile
     volumes:
       - ./:/app
       - /app/node_modules
