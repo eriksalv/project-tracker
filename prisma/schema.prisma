@@ -77,12 +77,11 @@ model Issue {
   priority    Priority  @default(LOW)
   status      Status    @default(OPEN)
   assignee    User?     @relation(fields: [assigneeId], references: [id])
-  assigneeId  Int       @map(name: "assignee_id")
+  assigneeId  Int?      @map(name: "assignee_id")
   comments    Comment[]
   createdAt   DateTime  @default(now()) @map(name: "created_at")
   updatedAt   DateTime  @updatedAt @map(name: "updated_at")
 
-  @@unique([boardId, title])
   @@map(name: "issue")
 }
 
