@@ -1,13 +1,13 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import authenticate from "../../../lib/api-utils/authenticate";
-import { projectArgs, projectWithBoardArgs } from "../../../lib/db-utils";
-import prisma from "../../../lib/prisma";
-import { ProjectResponse } from "../../../lib/queries/projects";
+import authenticate from "../../../../lib/api-utils/authenticate";
+import { projectArgs, projectWithBoardArgs } from "../../../../lib/db-utils";
+import prisma from "../../../../lib/prisma";
+import { ProjectResponse } from "../../../../lib/queries/projects";
 import {
   UpdateProjectForm,
   updateProjectSchema,
-} from "../../../lib/validation/project";
-import validate from "../../../lib/validation/validate";
+} from "../../../../lib/validation/project";
+import validate from "../../../../lib/validation/validate";
 
 export default async function handler(
   req: NextApiRequest,
