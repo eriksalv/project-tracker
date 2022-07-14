@@ -99,6 +99,12 @@ async function handlePOST(req: NextApiRequest, res: NextApiResponse) {
   try {
     const issue = await prisma.issue.create({
       data: {
+        id:
+          (await prisma.issue.count({
+            where: {
+              boardId,
+            },
+          })) + 1,
         title,
         description,
         priority,
