@@ -1,4 +1,4 @@
-import { Project } from "../client-types";
+import { Project } from "../../types/client";
 import axios from "axios";
 import { CreateProjectForm } from "../validation/project";
 

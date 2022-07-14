@@ -1,5 +1,5 @@
 import axios from "axios";
-import { User } from "../client-types";
+import { User } from "../../types/client";
 import { UpdateProfileForm } from "../validation/update-profile";
 
 export interface UserResponse {

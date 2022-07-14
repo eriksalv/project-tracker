@@ -1,5 +1,5 @@
 import axios from "axios";
-import { User } from "../client-types";
+import { User } from "../../types/client";
 import { LoginForm } from "../validation/signin";
 import { RegisterForm } from "../validation/signup";
 

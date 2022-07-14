@@ -1,5 +1,5 @@
 import create from "zustand";
-import { Project } from "../lib/client-types";
+import { Project } from "../types/client";
 
 export interface ProjectState {
   project: Project | null;
