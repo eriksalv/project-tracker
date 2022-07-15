@@ -19,7 +19,8 @@ model User {
   projects        Project[]
   starredProjects Star[]
   contributingTo  Contribution[]
-  assignedIssues  Issue[]
+  assignedIssues  Issue[]        @relation("assignee")
+  createdIssues   Issue[]        @relation("creator")
   comments        Comment[]
   createdAt       DateTime       @default(now()) @map(name: "created_at")
   updatedAt       DateTime       @updatedAt @map(name: "updated_at")
@@ -76,8 +77,11 @@ model Issue {
   description String?   @db.Text
   priority    Priority  @default(LOW)
   status      Status    @default(OPEN)
-  assignee    User?     @relation(fields: [assigneeId], references: [id], onDelete: SetNull)
+  creator     User?     @relation("creator", fields: [creatorId], references: [id], onDelete: SetNull)
+  creatorId   Int?      @map(name: "creator_id")
+  assignee    User?     @relation("assignee", fields: [assigneeId], references: [id], onDelete: SetNull)
   assigneeId  Int?      @map(name: "assignee_id")
+  dueDate     DateTime? @map(name: "due_date")
   comments    Comment[]
   createdAt   DateTime  @default(now()) @map(name: "created_at")
   updatedAt   DateTime  @updatedAt @map(name: "updated_at")
