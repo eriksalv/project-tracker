@@ -16,7 +16,15 @@ export const createProject = async (
   return res.data;
 };
 
-export const getProject = async (id: number): Promise<ProjectResponse> => {
+export const getProject = async (
+  id: string | string[] | undefined
+): Promise<ProjectResponse> => {
+  if (Number.isNaN(id)) {
+    return {
+      errors: "Invalid project id",
+    };
+  }
+
   const res = await axios.get(`/api/projects/${id}`);
   return res.data;
 };

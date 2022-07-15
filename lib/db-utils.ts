@@ -21,7 +21,6 @@ export const projectWithBoardArgs: Prisma.ProjectArgs = {
     board: {
       select: {
         id: true,
-        issues: true,
         contributors: {
           select: {
             userId: true,
@@ -29,5 +28,12 @@ export const projectWithBoardArgs: Prisma.ProjectArgs = {
         },
       },
     },
+  },
+};
+
+export const issueArgs: Prisma.IssueArgs = {
+  include: {
+    creator: userArgs,
+    assignee: userArgs,
   },
 };

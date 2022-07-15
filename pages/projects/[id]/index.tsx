@@ -1,4 +1,11 @@
-import { ActionIcon, Group, Loader, Text, Title } from "@mantine/core";
+import {
+  ActionIcon,
+  Group,
+  Loader,
+  Skeleton,
+  Text,
+  Title,
+} from "@mantine/core";
 import { useRouter } from "next/router";
 import React from "react";
 import { useQuery } from "react-query";
@@ -7,6 +14,7 @@ import useProjectStore from "../../../store/project";
 import { Star } from "tabler-icons-react";
 
 import classes from "../../../styles/project.module.css";
+import IssueList from "../../../components/project/IssueList";
 
 const Project = () => {
   const router = useRouter();
@@ -16,7 +24,7 @@ const Project = () => {
 
   const { data, status } = useQuery<ProjectResponse, Error>(
     ["projects", id],
-    () => getProject(+id! as number),
+    () => getProject(id),
     {
       enabled: id !== undefined,
       onSuccess: (data) => {
@@ -28,32 +36,38 @@ const Project = () => {
     }
   );
 
-  if (status === "loading" || (!data?.project && status === "idle")) {
-    return <Loader />;
-  }
+  const project = data?.project;
 
-  if (status === "success") {
-    const { project } = data;
+  const isLoading = status === "loading" || !data;
 
-    return (
-      <section>
-        <Text className={classes.ownerProject}>
-          <div onClick={() => router.push(`/users/${project?.owner.id}`)}>
-            {project?.owner.username}
-          </div>
-          /<div onClick={() => router.reload()}>{project?.title}</div>
-        </Text>
-        <Group position="apart">
-          <Title order={1}>{project?.title}</Title>
-          <ActionIcon variant="light" radius="xl">
-            <Star />
-          </ActionIcon>
-        </Group>
-      </section>
-    );
-  }
+  return (
+    <>
+      <Skeleton
+        visible={isLoading}
+        height={isLoading ? "70px" : "auto"}
+        sx={{ marginBottom: "1rem" }}
+      >
+        {project && (
+          <>
+            <Text className={classes.ownerProject}>
+              <div onClick={() => router.push(`/users/${project.owner.id}`)}>
+                {project.owner.username}
+              </div>
+              /<div onClick={() => router.reload()}>{project.title}</div>
+            </Text>
+            <Group position="apart">
+              <Title order={1}>{project.title}</Title>
+              <ActionIcon variant="light" radius="xl">
+                <Star />
+              </ActionIcon>
+            </Group>
+          </>
+        )}
+      </Skeleton>
 
-  return <></>;
+      <IssueList id={id} />
+    </>
+  );
 };
 
 export default Project;

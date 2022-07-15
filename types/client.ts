@@ -8,10 +8,15 @@ import {
 
 export type User = Omit<PrismaUser, "password">;
 
-export type Board = Pick<PrismaBoard, "id"> & {
-  issues: Pick<PrismaIssue, "id" | "title" | "status" | "priority">;
+export type Issue = PrismaIssue & {
+  creator: Omit<User, "createdAt" | "updatedAt"> | null;
+  assignee: Omit<User, "createdAt" | "updatedAt"> | null;
 };
 
+export type Board = Pick<PrismaBoard, "id">;
+
+export type Contributor = Pick<PrismaContribution, "userId">;
+
 export type Project = PrismaProject & { owner: User } & { board: Board } & {
-  contributors: Pick<PrismaContribution, "userId">;
+  contributors: Contributor[];
 };
