@@ -60,7 +60,7 @@ async function handleGET(req: NextApiRequest, res: NextApiResponse) {
       take: 10,
       ...issueArgs,
     }),
-    prisma.issue.count(),
+    prisma.issue.count({ where: { boardId } }),
   ]);
 
   return res.status(200).json({

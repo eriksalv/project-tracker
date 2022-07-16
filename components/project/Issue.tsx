@@ -82,18 +82,16 @@ const Issue: React.FC<props> = ({ issue }) => {
             </Text>
           </Link>
 
-          <Group p={0}>
-            <Text color="dimmed" size="sm">
-              {`#${issue.id} opened ${moment(issue.createdAt).fromNow()} by `}
-              {issue.creator ? (
-                <Link href={`/users/${issue.creatorId}`}>
-                  {issue.creator.username || "?"}
-                </Link>
-              ) : (
-                "?"
-              )}
-            </Text>
-          </Group>
+          <Text color="dimmed" size="sm">
+            {`#${issue.id} opened ${moment(issue.createdAt).fromNow()} by `}
+            {issue.creator ? (
+              <Link href={`/users/${issue.creatorId}`}>
+                {issue.creator.username || "?"}
+              </Link>
+            ) : (
+              "?"
+            )}
+          </Text>
         </Stack>
       </Group>
 
