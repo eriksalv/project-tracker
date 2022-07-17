@@ -65,7 +65,7 @@ const IssueList: React.FC<props> = ({ id }) => {
         overflow="inside"
         size="xl"
       >
-        <IssueForm id={id} />
+        <IssueForm id={id} closeModal={() => setCreateIssueModalOpen(false)} />
       </Modal>
 
       <Group

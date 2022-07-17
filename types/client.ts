@@ -13,10 +13,8 @@ export type Issue = PrismaIssue & {
   assignee: Omit<User, "createdAt" | "updatedAt"> | null;
 };
 
-export type Board = Pick<PrismaBoard, "id">;
-
-export type Contributor = Pick<PrismaContribution, "userId">;
-
-export type Project = PrismaProject & { owner: User } & { board: Board } & {
-  contributors: Contributor[];
+export type Board = Pick<PrismaBoard, "id"> & {
+  contributors: [{ user: User }];
 };
+
+export type Project = PrismaProject & { owner: User } & { board: Board };

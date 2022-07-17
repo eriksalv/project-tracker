@@ -59,6 +59,11 @@ async function handleGET(req: NextApiRequest, res: NextApiResponse) {
       skip: (page - 1) * 10,
       take: 10,
       ...issueArgs,
+      orderBy: [
+        {
+          id: "desc",
+        },
+      ],
     }),
     prisma.issue.count({ where: { boardId } }),
   ]);
@@ -117,8 +122,7 @@ async function handlePOST(req: NextApiRequest, res: NextApiResponse) {
     return res.status(422).json({ errors });
   }
 
-  const { title, description, priority, status, assigneeId } =
-    data as CreateIssueForm;
+  const { title, description, priority, assigneeId } = data as CreateIssueForm;
 
   try {
     const issue = await prisma.issue.create({
@@ -132,7 +136,7 @@ async function handlePOST(req: NextApiRequest, res: NextApiResponse) {
         title,
         description,
         priority,
-        status,
+        status: "OPEN",
         assignee: assigneeId ? { connect: { id: assigneeId } } : undefined,
         creator: { connect: { id: user.id } },
         board: {

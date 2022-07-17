@@ -23,7 +23,7 @@ export const projectWithBoardArgs: Prisma.ProjectArgs = {
         id: true,
         contributors: {
           select: {
-            userId: true,
+            user: userArgs,
           },
         },
       },
