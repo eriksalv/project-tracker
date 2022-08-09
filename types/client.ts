@@ -6,7 +6,7 @@ import {
   Contribution as PrismaContribution,
 } from "@prisma/client";
 
-export type User = Omit<PrismaUser, "password">;
+export type User = Omit<PrismaUser, "password" | "createdAt" | "updatedAt">;
 
 export type Issue = PrismaIssue & {
   creator: Omit<User, "createdAt" | "updatedAt"> | null;

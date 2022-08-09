@@ -1,9 +1,10 @@
-import { NextApiRequest, NextApiResponse } from "next";
+import { NextApiResponse } from "next";
 import { projectArgs } from "../../../../lib/db-utils";
 import prisma from "../../../../lib/prisma";
+import { ExtendedNextApiRequest } from "../../../../types/next";
 
 export default async function handler(
-  req: NextApiRequest,
+  req: ExtendedNextApiRequest,
   res: NextApiResponse
 ) {
   switch (req.method) {
@@ -16,7 +17,7 @@ export default async function handler(
   }
 }
 
-async function handleGET(req: NextApiRequest, res: NextApiResponse) {
+async function handleGET(req: ExtendedNextApiRequest, res: NextApiResponse) {
   const { id } = req.query;
 
   const user = await prisma.user.findUnique({

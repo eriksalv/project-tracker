@@ -1,9 +1,10 @@
-import type { NextApiRequest, NextApiResponse } from "next";
+import type { NextApiResponse } from "next";
 import { userArgs } from "../../../lib/db-utils";
 import prisma from "../../../lib/prisma";
+import { ExtendedNextApiRequest } from "../../../types/next";
 
 export default async function handler(
-  req: NextApiRequest,
+  req: ExtendedNextApiRequest,
   res: NextApiResponse
 ) {
   switch (req.method) {

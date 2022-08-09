@@ -1,8 +1,9 @@
-import { NextApiRequest, NextApiResponse } from "next";
+import { NextApiResponse } from "next";
 import { destroySession } from "../../../lib/api-utils/auth";
+import { ExtendedNextApiRequest } from "../../../types/next";
 
 export default async function handler(
-  req: NextApiRequest,
+  req: ExtendedNextApiRequest,
   res: NextApiResponse
 ) {
   const { cookies } = req;

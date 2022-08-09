@@ -1,12 +1,10 @@
-import { NextApiRequest, NextApiResponse } from "next";
-import authenticate from "../../../../lib/api-utils/authenticate";
+import { NextApiResponse } from "next";
 import { projectArgs } from "../../../../lib/db-utils";
 import prisma from "../../../../lib/prisma";
+import withAuth from "../../../../middleware/with-auth";
+import { ExtendedNextApiRequest } from "../../../../types/next";
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
+async function handler(req: ExtendedNextApiRequest, res: NextApiResponse) {
   switch (req.method) {
     case "GET":
       return await handleGET(req, res);
@@ -17,15 +15,13 @@ export default async function handler(
   }
 }
 
-async function handleGET(req: NextApiRequest, res: NextApiResponse) {
-  const user = await authenticate(req, res);
-
-  if (!user) return res.status(401).json({ message: "You must be logged in" });
+async function handleGET(req: ExtendedNextApiRequest, res: NextApiResponse) {
+  const { user } = req;
 
   const projects = await prisma.project.findMany({
     where: {
       owner: {
-        id: user.id,
+        id: user!.id,
       },
     },
     ...projectArgs,
@@ -33,3 +29,5 @@ async function handleGET(req: NextApiRequest, res: NextApiResponse) {
 
   return res.status(200).json({ projects });
 }
+
+export default withAuth(handler);

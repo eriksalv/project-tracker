@@ -1,10 +1,11 @@
-import type { NextApiRequest, NextApiResponse } from "next";
+import type { NextApiResponse } from "next";
 import { userArgs } from "../../../../lib/db-utils";
 import prisma from "../../../../lib/prisma";
 import { UserResponse } from "../../../../lib/queries/users";
+import { ExtendedNextApiRequest } from "../../../../types/next";
 
 export default async function handler(
-  req: NextApiRequest,
+  req: ExtendedNextApiRequest,
   res: NextApiResponse<UserResponse>
 ) {
   switch (req.method) {
@@ -18,7 +19,7 @@ export default async function handler(
 }
 
 async function handleGET(
-  req: NextApiRequest,
+  req: ExtendedNextApiRequest,
   res: NextApiResponse<UserResponse>
 ) {
   const { id } = req.query;

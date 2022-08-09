@@ -1,4 +1,4 @@
-import { NextApiRequest, NextApiResponse } from "next";
+import { NextApiResponse } from "next";
 import {
   createSession,
   destroySession,
@@ -10,9 +10,10 @@ import { LoginForm, loginSchema } from "../../../lib/validation/signin";
 import validate from "../../../lib/validation/validate";
 import { AuthResponse } from "../../../lib/queries/auth";
 import { userArgs } from "../../../lib/db-utils";
+import { ExtendedNextApiRequest } from "../../../types/next";
 
-export default async function handler(
-  req: NextApiRequest,
+async function handler(
+  req: ExtendedNextApiRequest,
   res: NextApiResponse<AuthResponse>
 ) {
   switch (req.method) {
@@ -26,7 +27,7 @@ export default async function handler(
 }
 
 async function handlePOST(
-  req: NextApiRequest,
+  req: ExtendedNextApiRequest,
   res: NextApiResponse<AuthResponse>
 ) {
   const { cookies } = req;
@@ -60,7 +61,7 @@ async function handlePOST(
 
   const { body } = req;
 
-  const { data, errors } = await validate(loginSchema, body);
+  const { data, errors } = await validate(body, loginSchema);
 
   if (errors) {
     return res.status(422).json({ errors });
@@ -94,3 +95,5 @@ async function handlePOST(
 
   return res.status(401).json({ message: "Invalid credentials" });
 }
+
+export default handler;

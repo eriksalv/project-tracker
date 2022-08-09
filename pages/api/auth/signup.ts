@@ -1,13 +1,12 @@
 import prisma from "../../../lib/prisma";
-import { NextApiRequest, NextApiResponse } from "next";
+import { NextApiResponse } from "next";
 import { createSession, hashPassword } from "../../../lib/api-utils/auth";
 import { RegisterForm, registerSchema } from "../../../lib/validation/signup";
 import validate from "../../../lib/validation/validate";
+import { ExtendedNextApiRequest } from "../../../types/next";
+import withValidation from "../../../middleware/with-validation";
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
+async function handler(req: ExtendedNextApiRequest, res: NextApiResponse) {
   switch (req.method) {
     case "POST":
       return await handlePOST(req, res);
@@ -18,14 +17,8 @@ export default async function handler(
   }
 }
 
-async function handlePOST(req: NextApiRequest, res: NextApiResponse) {
-  const { body } = req;
-
-  const { errors, data } = await validate(registerSchema, body);
-
-  if (errors) {
-    return res.status(422).json({ errors });
-  }
+async function handlePOST(req: ExtendedNextApiRequest, res: NextApiResponse) {
+  const { data } = req;
 
   const { email, username, name, password } = data as RegisterForm;
 
@@ -59,3 +52,5 @@ async function handlePOST(req: NextApiRequest, res: NextApiResponse) {
     return res.status(400).json({ message: "Something went wrong" });
   }
 }
+
+export default withValidation(handler, registerSchema);

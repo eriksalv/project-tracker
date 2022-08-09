@@ -1,23 +1,26 @@
-import type { NextApiRequest, NextApiResponse } from "next";
-import authenticate from "../../../../../lib/api-utils/authenticate";
+import type { NextApiResponse } from "next";
+import { isContributor } from "../../../../../lib/db-utils";
 import prisma from "../../../../../lib/prisma";
 import {
   UpdateIssueForm,
   updateIssueSchema,
 } from "../../../../../lib/validation/issue";
-import validate from "../../../../../lib/validation/validate";
+import withAuth from "../../../../../middleware/with-auth";
+import withIssue from "../../../../../middleware/with-issue";
+import withValidation from "../../../../../middleware/with-validation";
+import { ExtendedNextApiRequest } from "../../../../../types/next";
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
+async function handler(req: ExtendedNextApiRequest, res: NextApiResponse) {
   switch (req.method) {
     case "GET":
       return await handleGET(req, res);
     case "PUT":
-      return await handlePUT(req, res);
+      return await withValidation(withAuth(handlePUT), updateIssueSchema)(
+        req,
+        res
+      );
     case "DELETE":
-      return await handleDELETE(req, res);
+      return await withAuth(handleDELETE)(req, res);
     default:
       return res.status(405).json({
         message: `The HTTP method ${req.method} is not supported for this route.`,
@@ -25,125 +28,38 @@ export default async function handler(
   }
 }
 
-async function handleGET(req: NextApiRequest, res: NextApiResponse) {
-  const { id: projectId, issueId } = req.query;
-
-  if (Number.isNaN(+issueId!) || Number.isNaN(+projectId!)) {
-    return res.status(400).json({
-      message: "The issueId and projectId parameters must be numbers.",
-    });
-  }
-
-  const board = await prisma.board.findUnique({
-    where: {
-      projectId: +projectId!,
-    },
-  });
-
-  if (!board) {
-    return res.status(404).json({
-      message: "Board not found",
-    });
-  }
-
-  const issue = await prisma.issue.findUnique({
-    where: {
-      boardId_id: { id: +issueId!, boardId: board.id },
-    },
-  });
-
-  if (!issue) {
-    return res.status(404).json({
-      message: "Issue not found.",
-    });
-  }
+async function handleGET(req: ExtendedNextApiRequest, res: NextApiResponse) {
+  const { issue } = req;
 
   return res.status(200).json({ issue });
 }
 
-export async function handlePUT(req: NextApiRequest, res: NextApiResponse) {
-  const user = await authenticate(req, res);
+export async function handlePUT(
+  req: ExtendedNextApiRequest,
+  res: NextApiResponse
+) {
+  const { issue, user, data } = req;
 
-  if (!user) {
-    return res.status(401).json({
-      message: "You must be logged in to update an issue.",
-    });
-  }
-
-  const { id: projectId, issueId } = req.query;
-
-  if (Number.isNaN(+issueId!) || Number.isNaN(+projectId!)) {
-    return res.status(400).json({
-      message: "The issueId and projectId parameters must be numbers.",
-    });
-  }
-
-  const board = await prisma.board.findUnique({
-    where: {
-      projectId: +projectId!,
-    },
-  });
-
-  if (!board) {
-    return res.status(404).json({
-      message: "Board not found",
-    });
-  }
-
-  const issue = await prisma.issue.findUnique({
-    where: {
-      boardId_id: { id: +issueId!, boardId: board.id },
-    },
-  });
-
-  if (!issue) {
-    return res.status(404).json({
-      message: "Issue not found.",
-    });
-  }
-
-  const isContributor = await prisma.contribution.findUnique({
-    where: {
-      userId_boardId: { userId: user.id, boardId: issue.boardId },
-    },
-  });
-
-  if (!isContributor) {
+  if (!(await isContributor(user!.id, issue!.boardId))) {
     return res.status(403).json({
       message: "You are not a collaborator on this board.",
     });
   }
 
-  const { body } = req;
-
-  const { data, errors } = await validate(updateIssueSchema, body);
-
-  if (errors) {
-    return res.status(422).json({ errors });
-  }
-
   const { title, description, priority, status, assigneeId } =
     data as UpdateIssueForm;
 
-  if (assigneeId) {
-    const isContributor = await prisma.contribution.findUnique({
-      where: {
-        userId_boardId: { userId: assigneeId, boardId: issue.boardId },
-      },
+  if (assigneeId && !(await isContributor(assigneeId, issue!.boardId))) {
+    return res.status(403).json({
+      message:
+        "Cannot change assignee to a user that is not a collaborator on this board.",
     });
-
-    if (!isContributor) {
-      return res.status(403).json({
-        message:
-          "Cannot change assignee to a user that is not a collaborator on this board.",
-      });
-    }
   }
 
   try {
     const updatedIssue = await prisma.issue.update({
       where: {
-        boardId_id: { id: +issueId!, boardId: board.id },
+        boardId_id: { id: issue!.id, boardId: issue!.boardId },
       },
       data: {
         title,
@@ -162,54 +78,10 @@ export async function handlePUT(req: NextApiRequest, res: NextApiResponse) {
   }
 }
 
-async function handleDELETE(req: NextApiRequest, res: NextApiResponse) {
-  const user = await authenticate(req, res);
+async function handleDELETE(req: ExtendedNextApiRequest, res: NextApiResponse) {
+  const { issue, user } = req;
 
-  if (!user) {
-    return res.status(401).json({
-      message: "You must be logged in to delete an issue.",
-    });
-  }
-
-  const { id: projectId, issueId } = req.query;
-
-  if (Number.isNaN(+issueId!) || Number.isNaN(+projectId!)) {
-    return res.status(400).json({
-      message: "The issueId and projectId parameters must be numbers.",
-    });
-  }
-
-  const board = await prisma.board.findUnique({
-    where: {
-      projectId: +projectId!,
-    },
-  });
-
-  if (!board) {
-    return res.status(404).json({
-      message: "Board not found",
-    });
-  }
-
-  const issue = await prisma.issue.findUnique({
-    where: {
-      boardId_id: { id: +issueId!, boardId: board.id },
-    },
-  });
-
-  if (!issue) {
-    return res.status(404).json({
-      message: "Issue not found.",
-    });
-  }
-
-  const isContributor = await prisma.contribution.findUnique({
-    where: {
-      userId_boardId: { userId: user.id, boardId: issue.boardId },
-    },
-  });
-
-  if (!isContributor) {
+  if (!(await isContributor(user!.id, issue!.boardId))) {
     return res.status(403).json({
       message: "You are not a collaborator on this board.",
     });
@@ -218,7 +90,7 @@ async function handleDELETE(req: NextApiRequest, res: NextApiResponse) {
   try {
     await prisma.issue.delete({
       where: {
-        boardId_id: { id: +issueId!, boardId: board.id },
+        boardId_id: { id: issue!.id, boardId: issue!.boardId },
       },
     });
 
@@ -229,3 +101,5 @@ async function handleDELETE(req: NextApiRequest, res: NextApiResponse) {
     });
   }
 }
+
+export default withIssue(handler);

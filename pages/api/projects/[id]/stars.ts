@@ -1,19 +1,19 @@
 import { Prisma } from "@prisma/client";
-import type { NextApiRequest, NextApiResponse } from "next";
+import type { NextApiResponse } from "next";
 import authenticate from "../../../../lib/api-utils/authenticate";
 import prisma from "../../../../lib/prisma";
+import withAuth from "../../../../middleware/with-auth";
+import withProject from "../../../../middleware/with-project";
+import { ExtendedNextApiRequest } from "../../../../types/next";
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
+async function handler(req: ExtendedNextApiRequest, res: NextApiResponse) {
   switch (req.method) {
     case "GET":
       return await handleGET(req, res);
     case "POST":
-      return await handlePOST(req, res);
+      return await withAuth(handlePOST)(req, res);
     case "DELETE":
-      return await handleDELETE(req, res);
+      return await withAuth(handleDELETE)(req, res);
     default:
       return res.status(405).json({
         message: `The HTTP method ${req.method} is not supported for this route.`,
@@ -21,57 +21,39 @@ export default async function handler(
   }
 }
 
-async function handleGET(req: NextApiRequest, res: NextApiResponse) {
+async function handleGET(req: ExtendedNextApiRequest, res: NextApiResponse) {
   const user = await authenticate(req, res);
-  const { id } = req.query;
 
+  const { id } = req.project!;
+
+  const starCount = await prisma.star.count({
+    where: {
+      projectId: id,
+    },
+  });
+
+  // If user is logged in, return wheter they have starred the project or not.
   if (!user) {
-    const starCount = await prisma.star.count({
-      where: {
-        projectId: +id!,
-      },
-    });
-
     return res.status(200).json({ starCount });
   } else {
-    const starCount = await prisma.star.count({
+    const hasStarred = !!(await prisma.star.findUnique({
       where: {
-        projectId: +id!,
+        userId_projectId: { userId: user.id, projectId: id },
       },
-    });
+    }));
 
-    const userStar = await prisma.star.findUnique({
-      where: {
-        userId_projectId: { userId: user.id, projectId: +id! },
-      },
-    });
-
-    return res.status(200).json({ starCount, userStar });
+    return res.status(200).json({ starCount, hasStarred });
   }
 }
 
-async function handlePOST(req: NextApiRequest, res: NextApiResponse) {
-  const user = await authenticate(req, res);
-
-  if (!user) {
-    return res.status(401).json({ message: "You must be logged in to star." });
-  }
-
-  const { id } = req.query;
-
-  const project = await prisma.project.findUnique({
-    where: { id: +id! },
-  });
-
-  if (!project) {
-    return res.status(404).json({ message: "Project not found." });
-  }
+async function handlePOST(req: ExtendedNextApiRequest, res: NextApiResponse) {
+  const { user, project } = req;
 
   try {
     const star = await prisma.star.create({
       data: {
-        user: { connect: { id: user.id } },
-        project: { connect: { id: project.id } },
+        user: { connect: { id: user!.id } },
+        project: { connect: { id: project!.id } },
       },
     });
     return res
@@ -88,29 +70,13 @@ async function handlePOST(req: NextApiRequest, res: NextApiResponse) {
   }
 }
 
-async function handleDELETE(req: NextApiRequest, res: NextApiResponse) {
-  const user = await authenticate(req, res);
-
-  if (!user) {
-    return res
-      .status(401)
-      .json({ message: "You must be logged in to unstar." });
-  }
-
-  const { id } = req.query;
-
-  const project = await prisma.project.findUnique({
-    where: { id: +id! },
-  });
-
-  if (!project) {
-    return res.status(404).json({ message: "Project not found." });
-  }
+async function handleDELETE(req: ExtendedNextApiRequest, res: NextApiResponse) {
+  const { user, project } = req;
 
   try {
     await prisma.star.delete({
       where: {
-        userId_projectId: { userId: user.id, projectId: +id! },
+        userId_projectId: { userId: user!.id, projectId: project!.id },
       },
     });
     return res.status(200).json({ message: "Unstarred successfully" });
@@ -124,3 +90,5 @@ async function handleDELETE(req: NextApiRequest, res: NextApiResponse) {
     return res.status(500).json({ message: "An error occurred." });
   }
 }
+
+export default withProject(handler);

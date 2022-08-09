@@ -1,4 +1,5 @@
 import { Prisma } from "@prisma/client";
+import prisma from "./prisma";
 
 export const userArgs: Prisma.UserArgs = {
   select: {
@@ -37,3 +38,14 @@ export const issueArgs: Prisma.IssueArgs = {
     assignee: userArgs,
   },
 };
+
+export async function isContributor(
+  userId: number,
+  boardId: number
+): Promise<boolean> {
+  return !!(await prisma.contribution.findUnique({
+    where: {
+      userId_boardId: { userId, boardId },
+    },
+  }));
+}

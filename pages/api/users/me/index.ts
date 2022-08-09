@@ -1,6 +1,6 @@
 import { Prisma } from "@prisma/client";
-import { NextApiRequest, NextApiResponse, NextApiHandler } from "next";
-import authenticate from "../../../../lib/api-utils/authenticate";
+import { NextApiResponse } from "next";
+import withAuth from "../../../../middleware/with-auth";
 import { userArgs } from "../../../../lib/db-utils";
 import prisma from "../../../../lib/prisma";
 import { UserResponse } from "../../../../lib/queries/users";
@@ -8,17 +8,15 @@ import {
   UpdateProfileForm,
   updateProfileSchema,
 } from "../../../../lib/validation/update-profile";
-import validate from "../../../../lib/validation/validate";
+import withValidation from "../../../../middleware/with-validation";
+import { ExtendedNextApiRequest } from "../../../../types/next";
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
+async function handler(req: ExtendedNextApiRequest, res: NextApiResponse) {
   switch (req.method) {
     case "GET":
       return await handleGET(req, res);
     case "PUT":
-      return await handlePUT(req, res);
+      return await withValidation(handlePUT, updateProfileSchema)(req, res);
     default:
       return res.status(405).json({
         message: `The HTTP method ${req.method} is not supported for this route.`,
@@ -26,31 +24,19 @@ export default async function handler(
   }
 }
 
-async function handleGET(req: NextApiRequest, res: NextApiResponse) {
-  const user = await authenticate(req, res);
-
-  if (!user) return res.status(401).json({ message: "You must be logged in" });
+async function handleGET(req: ExtendedNextApiRequest, res: NextApiResponse) {
+  const { user } = req;
 
   return res.status(200).json({ user });
 }
 
 async function handlePUT(
-  req: NextApiRequest,
+  req: ExtendedNextApiRequest,
   res: NextApiResponse<UserResponse>
 ) {
-  const user = await authenticate(req, res);
+  const { user, data } = req;
 
-  if (!user) return res.status(401).json({ message: "You must be logged in" });
-
-  const { id } = user;
-
-  const { body } = req;
-
-  const { data, errors } = await validate(updateProfileSchema, body);
-
-  if (errors) {
-    return res.status(422).json({ errors });
-  }
+  const { id } = user!;
 
   const { name } = data as UpdateProfileForm;
 
@@ -84,3 +70,5 @@ async function handlePUT(
     });
   }
 }
+
+export default withAuth(handler);

@@ -1,28 +1,28 @@
-import type { NextApiRequest, NextApiResponse } from "next";
-import authenticate from "../../../lib/api-utils/authenticate";
+import type { NextApiResponse } from "next";
 import prisma from "../../../lib/prisma";
 import { ProjectResponse } from "../../../lib/queries/projects";
 import {
   CreateProjectForm,
   createProjectSchema,
 } from "../../../lib/validation/project";
-import validate from "../../../lib/validation/validate";
-import {
-  projectArgs,
-  projectWithBoardArgs,
-  userArgs,
-} from "../../../lib/db-utils";
+import { projectArgs, projectWithBoardArgs } from "../../../lib/db-utils";
 import { Prisma } from "@prisma/client";
+import { ExtendedNextApiRequest } from "../../../types/next";
+import withAuth from "../../../middleware/with-auth";
+import withValidation from "../../../middleware/with-validation";
 
 export default async function handler(
-  req: NextApiRequest,
+  req: ExtendedNextApiRequest,
   res: NextApiResponse<ProjectResponse>
 ) {
   switch (req.method) {
     case "GET":
       return await handleGET(res);
     case "POST":
-      return await handlePOST(req, res);
+      return await withValidation(withAuth(handlePOST), createProjectSchema)(
+        req,
+        res
+      );
     default:
       return res.status(405).json({
         message: `The HTTP method ${req.method} is not supported for this route.`,
@@ -32,24 +32,12 @@ export default async function handler(
 
 async function handleGET(res: NextApiResponse) {
   const projects = await prisma.project.findMany(projectArgs);
+
   return res.status(200).json({ projects });
 }
 
-async function handlePOST(req: NextApiRequest, res: NextApiResponse) {
-  const user = await authenticate(req, res);
-
-  if (!user) {
-    return res.status(401).json({
-      message: "You must be logged in to create a project.",
-    });
-  }
-
-  const { body } = req;
-  const { data, errors } = await validate(createProjectSchema, body);
-
-  if (errors) {
-    return res.status(422).json({ errors });
-  }
+async function handlePOST(req: ExtendedNextApiRequest, res: NextApiResponse) {
+  const { data, user } = req;
 
   const { title, description, public: isPublic } = data as CreateProjectForm;
 
@@ -61,7 +49,7 @@ async function handlePOST(req: NextApiRequest, res: NextApiResponse) {
         public: isPublic,
         owner: {
           connect: {
-            id: user.id,
+            id: user!.id,
           },
         },
         board: {
@@ -71,7 +59,7 @@ async function handlePOST(req: NextApiRequest, res: NextApiResponse) {
                 {
                   user: {
                     connect: {
-                      id: user.id,
+                      id: user!.id,
                     },
                   },
                 },
