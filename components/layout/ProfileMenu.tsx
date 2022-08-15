@@ -1,7 +1,9 @@
 import { Avatar, Divider, Menu, MenuLabel } from "@mantine/core";
 import { NextLink } from "@mantine/next";
+import { showNotification, updateNotification } from "@mantine/notifications";
 import React from "react";
 import { useMutation } from "react-query";
+import { showLoader, showInfo } from "../../lib/notifications";
 import { signout } from "../../lib/queries/auth";
 import useAuthStore from "../../store/auth";
 
@@ -14,10 +16,16 @@ const ProfileMenu: React.FC<{ id: number; username: string }> = ({
   const { mutate } = useMutation(signout, {
     onSuccess: () => {
       logout();
+
+      updateNotification(
+        showInfo("You are now signed out", "signout", "Signed out")
+      );
     },
   });
 
   const onSignOut = () => {
+    showNotification(showLoader("signout", "Signing out..."));
+
     mutate();
   };
 

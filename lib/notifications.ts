@@ -29,3 +29,23 @@ export function showSuccess(message: string, id: string, title?: string) {
     autoClose: 4000,
   };
 }
+
+export function showInfo(message: string, id: string, title?: string) {
+  return {
+    id,
+    title: title || "Info",
+    message,
+    autoClose: 4000,
+  };
+}
+
+export function showLoader(id: string, title?: string) {
+  return {
+    id,
+    loading: true,
+    title: title || "Loading",
+    message: "Please wait...",
+    autoClose: false,
+    disallowClose: true,
+  };
+}
