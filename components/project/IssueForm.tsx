@@ -3,20 +3,17 @@ import {
   Button,
   Chip,
   Chips,
-  Divider,
-  InputWrapper,
   NativeSelect,
-  Radio,
-  RadioGroup,
-  Select,
   Text,
   Textarea,
   TextInput,
 } from "@mantine/core";
-import { Priority } from "@prisma/client";
-import React, { Dispatch, SetStateAction, useState } from "react";
+import { showNotification } from "@mantine/notifications";
+import React, { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useMutation, useQueryClient } from "react-query";
+import { Check } from "tabler-icons-react";
+import { showError, showSuccess } from "../../lib/notifications";
 import { createIssue } from "../../lib/queries/issues";
 import { CreateIssueForm, createIssueSchema } from "../../lib/validation/issue";
 import useProjectStore from "../../store/project";
@@ -37,7 +34,7 @@ const IssueForm: React.FC<props> = ({ id, closeModal }) => {
 
   const formOptions = { resolver: yupResolver(createIssueSchema) };
 
-  const { register, handleSubmit, reset, formState, control } =
+  const { register, handleSubmit, formState, control } =
     useForm<CreateIssueForm>(formOptions);
   const { errors } = formState;
 
@@ -47,10 +44,14 @@ const IssueForm: React.FC<props> = ({ id, closeModal }) => {
       onSuccess: () => {
         queryClient.invalidateQueries(["issues", id]);
         closeModal();
+
+        showNotification({
+          ...showSuccess("Issue created successfully", "create-issue"),
+          icon: <Check size={16} />,
+        });
       },
-      onError: () => {
-        console.error("Something went wrong");
-        reset();
+      onError: (error) => {
+        showNotification(showError(error, "create-issue"));
       },
     }
   );

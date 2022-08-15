@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Button, Card, PasswordInput, TextInput } from "@mantine/core";
@@ -7,12 +6,14 @@ import { signin } from "../lib/queries/auth";
 import { useMutation } from "react-query";
 import useAuthStore from "../store/auth";
 import { useRouter } from "next/router";
+import { showNotification } from "@mantine/notifications";
+import { showError, showSuccess } from "../lib/notifications";
+import { Check } from "tabler-icons-react";
 
 const LoginPage = () => {
   const formOptions = { resolver: yupResolver(loginSchema) };
 
-  const { register, handleSubmit, reset, formState } =
-    useForm<LoginForm>(formOptions);
+  const { register, handleSubmit, formState } = useForm<LoginForm>(formOptions);
   const { errors } = formState;
 
   const router = useRouter();
@@ -25,10 +26,14 @@ const LoginPage = () => {
       onSuccess: (data) => {
         zustandSignin(data);
         router.replace("/");
+
+        showNotification({
+          ...showSuccess("Logged in successfully", "login"),
+          icon: <Check size={16} />,
+        });
       },
-      onError: () => {
-        console.error("Something went wrong");
-        reset();
+      onError: (error) => {
+        showNotification(showError(error, "login"));
       },
     }
   );
@@ -68,7 +73,7 @@ const LoginPage = () => {
             },
           })}
         >
-          Sign up
+          Sign in
         </Button>
       </form>
     </Card>

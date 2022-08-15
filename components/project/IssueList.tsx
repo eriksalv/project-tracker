@@ -140,16 +140,28 @@ const IssueList: React.FC<props> = ({ id }) => {
               </Group>
             </Group>
 
-            {getRows()}
+            {issues.length > 0 ? (
+              getRows()
+            ) : (
+              <Text
+                size="lg"
+                weight="bold"
+                sx={{ textAlign: "center", padding: "8rem" }}
+              >
+                There are no issues yet
+              </Text>
+            )}
           </List>
         </Paper>
       )}
-      <Pagination
-        page={activePage}
-        onChange={setPage}
-        total={getTotalPages(count!)}
-        sx={{ marginTop: "1rem" }}
-      />
+      {issues?.length! > 0 && (
+        <Pagination
+          page={activePage}
+          onChange={setPage}
+          total={getTotalPages(count!)}
+          sx={{ marginTop: "1rem" }}
+        />
+      )}
     </Skeleton>
   );
 };

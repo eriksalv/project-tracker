@@ -1,9 +1,12 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Button, Radio, Textarea, TextInput } from "@mantine/core";
+import { showNotification } from "@mantine/notifications";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useMutation, useQueryClient } from "react-query";
+import { Check } from "tabler-icons-react";
+import { showError, showSuccess } from "../lib/notifications";
 import { createProject } from "../lib/queries/projects";
 import {
   CreateProjectForm,
@@ -17,7 +20,7 @@ const NewProject = () => {
 
   const formOptions = { resolver: yupResolver(createProjectSchema) };
 
-  const { register, handleSubmit, reset, formState } =
+  const { register, handleSubmit, formState } =
     useForm<CreateProjectForm>(formOptions);
   const { errors } = formState;
 
@@ -29,10 +32,13 @@ const NewProject = () => {
       onSuccess: (data) => {
         queryClient.setQueryData(["projects", data.project?.id], data.project!);
         router.replace(`/projects/${data.project?.id}`);
+        showNotification({
+          ...showSuccess("Project created successfully", "create-project"),
+          icon: <Check size={16} />,
+        });
       },
-      onError: () => {
-        console.error("Something went wrong");
-        reset();
+      onError: (error) => {
+        showNotification(showError(error, "create-project"));
       },
     }
   );

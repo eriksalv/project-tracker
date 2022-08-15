@@ -9,6 +9,7 @@ import ApplicationContainer from "../components/layout/ApplicationContainer";
 import { useHotkeys, useLocalStorage } from "@mantine/hooks";
 import { Hydrate, QueryClient, QueryClientProvider } from "react-query";
 import { useState } from "react";
+import { NotificationsProvider } from "@mantine/notifications";
 
 function MyApp({ Component, pageProps }: AppProps) {
   const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({
@@ -53,9 +54,11 @@ function MyApp({ Component, pageProps }: AppProps) {
               },
             }}
           >
-            <ApplicationContainer>
-              <Component {...pageProps} />
-            </ApplicationContainer>
+            <NotificationsProvider limit={5}>
+              <ApplicationContainer>
+                <Component {...pageProps} />
+              </ApplicationContainer>
+            </NotificationsProvider>
           </MantineProvider>
         </ColorSchemeProvider>
       </Hydrate>

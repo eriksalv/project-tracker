@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Button, Card, PasswordInput, TextInput } from "@mantine/core";
@@ -7,11 +6,14 @@ import useAuthStore from "../store/auth";
 import { useMutation } from "react-query";
 import { signup } from "../lib/queries/auth";
 import { useRouter } from "next/router";
+import { showNotification } from "@mantine/notifications";
+import { showError, showSuccess } from "../lib/notifications";
+import { Check } from "tabler-icons-react";
 
 const RegisterPage = () => {
   const formOptions = { resolver: yupResolver(registerSchema) };
 
-  const { register, handleSubmit, reset, formState } =
+  const { register, handleSubmit, formState } =
     useForm<RegisterForm>(formOptions);
   const { errors } = formState;
 
@@ -25,10 +27,14 @@ const RegisterPage = () => {
       onSuccess: (data) => {
         signin(data);
         router.replace("/");
+
+        showNotification({
+          ...showSuccess("Registered successfully", "register"),
+          icon: <Check size={16} />,
+        });
       },
-      onError: () => {
-        console.error("something went wrong");
-        reset();
+      onError: (error) => {
+        showNotification(showError(error, "register"));
       },
     }
   );

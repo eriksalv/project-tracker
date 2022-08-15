@@ -61,7 +61,7 @@ async function handlePOST(
 
   const { body } = req;
 
-  const { data, errors } = await validate(body, loginSchema);
+  const { data, errors } = await validate(loginSchema, body);
 
   if (errors) {
     return res.status(422).json({ errors });
