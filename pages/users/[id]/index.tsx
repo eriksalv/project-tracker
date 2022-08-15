@@ -1,43 +1,29 @@
-import React from "react";
-import { useQuery } from "react-query";
-import { getUser, UserResponse } from "../../../lib/queries/users";
-import { useRouter } from "next/router";
+import { Box } from "@mantine/core";
+import UserDetails from "../../../components/user/UserDetails";
 
 const User = () => {
-  const router = useRouter();
-
-  const id = router.query.id;
-
-  const { data, status } = useQuery<UserResponse, Error>(
-    ["user", id],
-    () => getUser(+id! as number),
-    {
-      enabled: id !== undefined,
-    }
+  return (
+    <Box
+      sx={{
+        width: "100%",
+        display: "flex",
+        justifyContent: "center",
+        flexWrap: "wrap",
+      }}
+    >
+      <Box
+        sx={{
+          flex: 1,
+          maxWidth: "960px",
+          display: "flex",
+          justifyContent: "center",
+        }}
+      >
+        <UserDetails />
+        <Box sx={{ flex: 2, background: "blue" }}>Hello world</Box>
+      </Box>
+    </Box>
   );
-
-  if (status === "loading" || !data?.user) {
-    return <h1>Loading...</h1>;
-  }
-
-  if (status === "error") {
-    return <h1>Error</h1>;
-  }
-
-  if (status === "success") {
-    const { user } = data;
-    return (
-      <div>
-        <h1>{user.username}</h1>
-        <h1>{user.email}</h1>
-        <h1>{user.name}</h1>
-      </div>
-    );
-  }
-
-  return <></>;
 };
-
-// export const getServerSideProps = async () => {};
 
 export default User;

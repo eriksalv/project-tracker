@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { AppShell, Footer, Progress, useMantineTheme } from "@mantine/core";
+import {
+  AppShell,
+  Box,
+  Footer,
+  Progress,
+  useMantineTheme,
+} from "@mantine/core";
 import Header from "./Header";
 import Navbar from "./navbars/ProjectNavbar";
 import useAuthStore from "../../store/auth";
