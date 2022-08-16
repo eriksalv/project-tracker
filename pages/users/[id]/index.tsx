@@ -1,4 +1,4 @@
-import { Box } from "@mantine/core";
+import { Box, MediaQuery } from "@mantine/core";
 import UserDetails from "../../../components/user/UserDetails";
 
 const User = () => {
@@ -11,17 +11,19 @@ const User = () => {
         flexWrap: "wrap",
       }}
     >
-      <Box
-        sx={{
-          flex: 1,
-          maxWidth: "960px",
-          display: "flex",
-          justifyContent: "center",
-        }}
-      >
-        <UserDetails />
-        <Box sx={{ flex: 2, background: "blue" }}>Hello world</Box>
-      </Box>
+      <MediaQuery smallerThan="sm" styles={{ display: "block" }}>
+        <Box
+          sx={{
+            width: "100%",
+            maxWidth: "960px",
+            display: "flex",
+            justifyContent: "center",
+          }}
+        >
+          <UserDetails />
+          <Box sx={{ flex: 2 }}>Hello world</Box>
+        </Box>
+      </MediaQuery>
     </Box>
   );
 };
