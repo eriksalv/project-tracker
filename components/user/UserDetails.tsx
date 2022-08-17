@@ -6,6 +6,7 @@ import {
   Card,
   Divider,
   Group,
+  Paper,
   Skeleton,
   Stack,
   Text,
@@ -26,7 +27,7 @@ const UserDetails = () => {
 
   const { data, status } = useQuery<UserResponse, Error>(
     ["user", id],
-    () => getUser(+id! as number),
+    () => getUser(id),
     {
       enabled: id !== undefined,
       onError: () => {
@@ -60,7 +61,15 @@ const UserDetails = () => {
 
   return (
     <Stack spacing="lg" sx={{ alignItems: "center", flex: 1 }}>
-      <Avatar size={128} radius="xl" />
+      <Avatar
+        size={128}
+        radius="xl"
+        sx={{
+          zIndex: 10,
+          background:
+            "linear-gradient(225deg, #FF3CAC 0%, #784BA0 50%, #2B86C5 100%);",
+        }}
+      />
       <Text size="xl" weight="bold">
         {user.name ? user.name : user.username}
       </Text>
@@ -74,7 +83,7 @@ const UserDetails = () => {
       )}
 
       {/* About section */}
-      <Card shadow="sm" p="md" radius="md" withBorder sx={{ width: "100%" }}>
+      <Paper shadow="sm" sx={{ width: "100%", padding: "1rem" }}>
         <Text size="sm" weight="bold" sx={{ marginBottom: "0.5rem" }}>
           CONTACT
         </Text>
@@ -98,7 +107,7 @@ const UserDetails = () => {
           <Mail size={16} />
           <span>{user.email}</span>
         </Text>
-      </Card>
+      </Paper>
     </Stack>
   );
 };

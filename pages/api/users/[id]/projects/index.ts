@@ -1,7 +1,8 @@
 import { NextApiResponse } from "next";
-import { projectArgs } from "../../../../lib/db-utils";
-import prisma from "../../../../lib/prisma";
-import { ExtendedNextApiRequest } from "../../../../types/next";
+import isInt from "../../../../../lib/api-utils/isInt";
+import { projectArgs } from "../../../../../lib/db-utils";
+import prisma from "../../../../../lib/prisma";
+import { ExtendedNextApiRequest } from "../../../../../types/next";
 
 export default async function handler(
   req: ExtendedNextApiRequest,
@@ -18,7 +19,21 @@ export default async function handler(
 }
 
 async function handleGET(req: ExtendedNextApiRequest, res: NextApiResponse) {
-  const { id } = req.query;
+  const { id, limit } = req.query;
+
+  if (!isInt(id)) {
+    return res.status(400).json({
+      message: "Invalid user id",
+    });
+  }
+
+  if (limit && !isInt(limit)) {
+    console.log("hello");
+
+    return res.status(400).json({
+      message: "Invalid limit",
+    });
+  }
 
   const user = await prisma.user.findUnique({
     where: {
@@ -33,6 +48,7 @@ async function handleGET(req: ExtendedNextApiRequest, res: NextApiResponse) {
   }
 
   const projects = await prisma.project.findMany({
+    take: limit ? +limit : undefined,
     where: {
       owner: {
         id: +id!,

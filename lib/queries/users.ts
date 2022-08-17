@@ -1,5 +1,6 @@
 import axios from "axios";
 import { User } from "../../types/client";
+import isInt from "../api-utils/isInt";
 import { UpdateProfileForm } from "../validation/update-profile";
 
 export interface UserResponse {
@@ -9,7 +10,13 @@ export interface UserResponse {
   errors?: string | string[];
 }
 
-export const getUser = async (id: number): Promise<UserResponse> => {
+export const getUser = async (
+  id: string | string[] | undefined
+): Promise<UserResponse> => {
+  if (!isInt(id)) {
+    throw new Error("Invalid user id");
+  }
+
   const res = await axios.get(`/api/users/${id}`);
   return res.data;
 };
