@@ -10,6 +10,7 @@ import { useHotkeys, useLocalStorage } from "@mantine/hooks";
 import { Hydrate, QueryClient, QueryClientProvider } from "react-query";
 import { useState } from "react";
 import { NotificationsProvider } from "@mantine/notifications";
+import { ReactQueryDevtools } from "react-query/devtools";
 
 function MyApp({ Component, pageProps }: AppProps) {
   const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({
@@ -62,6 +63,7 @@ function MyApp({ Component, pageProps }: AppProps) {
           </MantineProvider>
         </ColorSchemeProvider>
       </Hydrate>
+      <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );
 }
