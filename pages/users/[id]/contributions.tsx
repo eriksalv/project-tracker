@@ -3,18 +3,18 @@ import { useRouter } from "next/router";
 import { useQuery } from "react-query";
 import ProjectList from "../../../components/user/ProjectList";
 import {
-  getUserProjects,
+  getUserContributions,
   ProjectResponse,
 } from "../../../lib/queries/projects";
 
-const UserProjects = () => {
+const Contributions = () => {
   const router = useRouter();
 
   const id = router.query.id;
 
   const { data, status } = useQuery<ProjectResponse, Error>(
     "projects",
-    () => getUserProjects(id),
+    () => getUserContributions(id),
     {
       enabled: id !== undefined,
       onError: () => {
@@ -42,9 +42,9 @@ const UserProjects = () => {
           flexDirection: "column",
         }}
       >
-        <Title sx={{ width: "100%" }}>Projects</Title>
+        <Title sx={{ width: "100%" }}>Contributions</Title>
         <Text sx={{ marginBottom: "1rem" }} color="dimmed">
-          Projects created by the user
+          Projects that the user has either created or contributed to
         </Text>
         {status === "loading" || !projects ? (
           <Skeleton sx={{ width: "100%" }} height={256} />
@@ -56,4 +56,4 @@ const UserProjects = () => {
   );
 };
 
-export default UserProjects;
+export default Contributions;

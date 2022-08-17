@@ -1,4 +1,5 @@
 import { Box, MediaQuery, Skeleton, Stack, Text } from "@mantine/core";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import { useQuery } from "react-query";
 import {
@@ -16,7 +17,7 @@ const UserProjectsOverview = () => {
   const { data: userProjectsData, status: userProjectsStatus } = useQuery<
     ProjectResponse,
     Error
-  >("projects", () => getUserProjects(id), {
+  >("projects", () => getUserProjects(id, 3), {
     enabled: id !== undefined,
     onError: () => {
       router.replace("/404");
@@ -26,7 +27,7 @@ const UserProjectsOverview = () => {
   const { data: contributingData, status: contributingStatus } = useQuery<
     ProjectResponse,
     Error
-  >("contributing", () => getUserContributions(id), {
+  >("contributing", () => getUserContributions(id, 3), {
     enabled: id !== undefined,
     onError: () => {
       router.replace("/404");
@@ -50,17 +51,20 @@ const UserProjectsOverview = () => {
               <Text weight="bold" size="lg">
                 PROJECTS
               </Text>
-              <Text
-                weight={100}
-                sx={{
-                  "&:hover": {
-                    cursor: "pointer",
-                    textDecoration: "underline",
-                  },
-                }}
-              >
-                View all
-              </Text>
+              <Link href={`/users/${id}/projects`} passHref>
+                <Text
+                  component="a"
+                  weight={100}
+                  sx={{
+                    "&:hover": {
+                      cursor: "pointer",
+                      textDecoration: "underline",
+                    },
+                  }}
+                >
+                  View all
+                </Text>
+              </Link>
             </Box>
             {userProjectsStatus === "loading" || !userProjects ? (
               <Skeleton height={128} width="100%" />
@@ -75,17 +79,20 @@ const UserProjectsOverview = () => {
               <Text weight="bold" size="lg">
                 CONTRIBUTING TO
               </Text>
-              <Text
-                weight={100}
-                sx={{
-                  "&:hover": {
-                    cursor: "pointer",
-                    textDecoration: "underline",
-                  },
-                }}
-              >
-                View all
-              </Text>
+              <Link href={`/users/${id}/contributions`} passHref>
+                <Text
+                  component="a"
+                  weight={100}
+                  sx={{
+                    "&:hover": {
+                      cursor: "pointer",
+                      textDecoration: "underline",
+                    },
+                  }}
+                >
+                  View all
+                </Text>
+              </Link>
             </Box>
             {contributingStatus === "loading" || !contributing ? (
               <Skeleton height={128} width="100%" />
