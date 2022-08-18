@@ -19,6 +19,7 @@ import { showError, showSuccess } from "../../lib/notifications";
 import { createIssue } from "../../lib/queries/issues";
 import { CreateIssueForm, createIssueSchema } from "../../lib/validation/issue";
 import useProjectStore from "../../store/project";
+import { Markdown } from "tabler-icons-react";
 
 type props = {
   id: string | string[] | undefined;
@@ -26,7 +27,9 @@ type props = {
 };
 
 const IssueForm: React.FC<props> = ({ id, closeModal }) => {
-  // const [priority, setPriority] = useState<string>("MEDIUM");
+  const [description, setDescription] = useState("");
+
+  const [previewMode, setPreviewMode] = useState(false);
 
   const [assignee, setAssignee] = useState<number | "">("");
 
@@ -36,7 +39,7 @@ const IssueForm: React.FC<props> = ({ id, closeModal }) => {
 
   const formOptions = { resolver: yupResolver(createIssueSchema) };
 
-  const { register, handleSubmit, formState, control } =
+  const { register, handleSubmit, formState, control, getValues } =
     useForm<CreateIssueForm>(formOptions);
   const { errors } = formState;
 
@@ -72,21 +75,54 @@ const IssueForm: React.FC<props> = ({ id, closeModal }) => {
           error={errors.title?.message}
           required
         />
+        <Text
+          style={{
+            display: "inline-block",
+            marginBottom: "4px",
+            fontSize: "14px",
+            fontWeight: "500",
+            wordBreak: "break-word",
+            cursor: "default",
+          }}
+        >
+          <span>Description (</span>
+          <span
+            className="hoverText"
+            style={{ fontWeight: "normal" }}
+            onClick={() => setPreviewMode((prevVal: boolean) => !prevVal)}
+          >
+            {previewMode ? "edit" : "preview"})
+          </span>
+        </Text>
+        {previewMode ? (
+          <Card>
+            <ReactMarkdown>{description}</ReactMarkdown>
+          </Card>
+        ) : (
+          <Textarea
+            id="description"
+            {...register("description")}
+            error={errors.description?.message}
+            onChange={(e) => setDescription(e.target.value)}
+            autosize
+            minRows={5}
+            maxRows={10}
+          />
+        )}
 
-        <Textarea
-          id="description"
-          label="Description (supports markdown)"
-          {...register("description")}
-          error={errors.description?.message}
-          autosize
-          minRows={5}
-          maxRows={10}
-        />
-
-        <Card sx={{ marginTop: "1rem" }}>
-          <ReactMarkdown>Hello gais</ReactMarkdown>
-        </Card>
-
+        <Text
+          size="sm"
+          color="dimmed"
+          sx={{
+            marginTop: "0.5rem",
+            display: "flex",
+            alignItems: "center",
+            gap: "2px",
+          }}
+        >
+          <Markdown />
+          Markdown supported
+        </Text>
         {/* <NativeSelect
           id="priority"
           label="Priority"
@@ -104,11 +140,9 @@ const IssueForm: React.FC<props> = ({ id, closeModal }) => {
           }
           required
         /> */}
-
         <Text size="sm" weight={500} sx={{ marginTop: "0.5rem" }}>
           Priority
         </Text>
-
         <Controller
           control={control}
           name="priority"
@@ -127,11 +161,9 @@ const IssueForm: React.FC<props> = ({ id, closeModal }) => {
             </Chips>
           )}
         />
-
         <Text size="sm" weight={500} sx={{ marginTop: "0.5rem" }}>
           {errors.priority?.message}
         </Text>
-
         <NativeSelect
           id="assignee"
           label="Assign to"
@@ -155,7 +187,6 @@ const IssueForm: React.FC<props> = ({ id, closeModal }) => {
             )
           }
         />
-
         <Button
           type="submit"
           loading={createIssueMutation.isLoading}
