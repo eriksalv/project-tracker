@@ -39,7 +39,7 @@ const IssueForm: React.FC<props> = ({ id, closeModal }) => {
 
   const formOptions = { resolver: yupResolver(createIssueSchema) };
 
-  const { register, handleSubmit, formState, control, getValues } =
+  const { register, handleSubmit, formState, control } =
     useForm<CreateIssueForm>(formOptions);
   const { errors } = formState;
 

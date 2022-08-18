@@ -1,4 +1,5 @@
 import { Box } from "@mantine/core";
+import Comments from "../../../../components/issue/Comments";
 import IssueDetails from "../../../../components/issue/IssueDetails";
 import ProjectHeader from "../../../../components/project/ProjectHeader";
 
@@ -14,6 +15,7 @@ const Issue = () => {
     >
       <ProjectHeader />
       <IssueDetails />
+      <Comments />
     </Box>
   );
 };
