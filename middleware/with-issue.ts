@@ -1,6 +1,7 @@
 import { NextApiResponse } from "next";
 import { ExtendedNextApiRequest } from "../types/next";
 import prisma from "../lib/prisma";
+import { userArgs } from "../lib/db-utils";
 
 export default function withIssue(
   next: (req: ExtendedNextApiRequest, res: NextApiResponse) => Promise<void>
@@ -32,6 +33,11 @@ export default function withIssue(
     const issue = await prisma.issue.findUnique({
       where: {
         boardId_id: { id: +issueId!, boardId: board.id },
+      },
+      include: {
+        comments: true,
+        assignee: userArgs,
+        creator: userArgs,
       },
     });
 

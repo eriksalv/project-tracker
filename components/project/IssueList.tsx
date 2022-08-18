@@ -34,7 +34,7 @@ const IssueList: React.FC<props> = ({ id }) => {
   const [createIssueModalOpen, setCreateIssueModalOpen] = useState(false);
 
   const { data, status, isFetching } = useQuery<IssueResponse, Error>(
-    ["issues", id, activePage],
+    ["issues", id, { page: activePage }],
     () => getIssues(id, activePage),
     {
       enabled: id !== undefined,
@@ -49,7 +49,9 @@ const IssueList: React.FC<props> = ({ id }) => {
   const isLoading = status === "loading" || !issues || isFetching;
 
   const getRows = () =>
-    issues?.map((issue) => <Issue issue={issue} key={issue.id} />);
+    issues?.map((issue) => (
+      <Issue issue={issue} projectId={+id!} key={issue.id} />
+    ));
 
   return (
     <Skeleton

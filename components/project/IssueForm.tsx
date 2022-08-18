@@ -1,6 +1,7 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import {
   Button,
+  Card,
   Chip,
   Chips,
   NativeSelect,
@@ -11,6 +12,7 @@ import {
 import { showNotification } from "@mantine/notifications";
 import React, { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import ReactMarkdown from "react-markdown";
 import { useMutation, useQueryClient } from "react-query";
 import { Check } from "tabler-icons-react";
 import { showError, showSuccess } from "../../lib/notifications";
@@ -73,10 +75,17 @@ const IssueForm: React.FC<props> = ({ id, closeModal }) => {
 
         <Textarea
           id="description"
-          label="Description"
+          label="Description (supports markdown)"
           {...register("description")}
           error={errors.description?.message}
+          autosize
+          minRows={5}
+          maxRows={10}
         />
+
+        <Card sx={{ marginTop: "1rem" }}>
+          <ReactMarkdown>Hello gais</ReactMarkdown>
+        </Card>
 
         {/* <NativeSelect
           id="priority"

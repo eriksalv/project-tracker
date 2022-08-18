@@ -4,12 +4,14 @@ import { Issue } from "../../types/client";
 import { Circle, CircleHalfVertical, CircleDashed } from "tabler-icons-react";
 import { Avatar, Group, Stack, Text, ThemeIcon, Tooltip } from "@mantine/core";
 import moment from "moment";
+import useProjectStore from "../../store/project";
 
 type props = {
   issue: Issue;
+  projectId: number;
 };
 
-const getIcon = (issue: Issue) => {
+export const getIcon = (issue: Issue) => {
   if (issue.status === "OPEN") {
     return (
       <Tooltip
@@ -58,7 +60,7 @@ const getIcon = (issue: Issue) => {
   );
 };
 
-const Issue: React.FC<props> = ({ issue }) => {
+const Issue: React.FC<props> = ({ issue, projectId }) => {
   return (
     <Group
       sx={(theme) => ({
@@ -76,8 +78,13 @@ const Issue: React.FC<props> = ({ issue }) => {
         {getIcon(issue)}
 
         <Stack spacing={0}>
-          <Link href="/" passHref>
-            <Text size="lg" component="a" weight={700}>
+          <Link href={`/projects/${projectId}/issues/${issue.id}`} passHref>
+            <Text
+              size="lg"
+              component="a"
+              weight={700}
+              sx={{ "&:hover": { textDecoration: "underline" } }}
+            >
               {issue.title}
             </Text>
           </Link>

@@ -15,7 +15,7 @@ import { ReactQueryDevtools } from "react-query/devtools";
 function MyApp({ Component, pageProps }: AppProps) {
   const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({
     key: "mantine-color-scheme",
-    defaultValue: "light",
+    defaultValue: "dark",
     getInitialValueInEffect: true,
   });
 
@@ -63,7 +63,9 @@ function MyApp({ Component, pageProps }: AppProps) {
           </MantineProvider>
         </ColorSchemeProvider>
       </Hydrate>
-      <ReactQueryDevtools initialIsOpen={false} />
+      {process.env.NODE_ENV === "development" && (
+        <ReactQueryDevtools initialIsOpen={false} />
+      )}
     </QueryClientProvider>
   );
 }

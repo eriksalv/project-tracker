@@ -4,6 +4,7 @@ import {
   User as PrismaUser,
   Issue as PrismaIssue,
   Contribution as PrismaContribution,
+  Comment as PrismaComment,
 } from "@prisma/client";
 
 export type User = Omit<PrismaUser, "password" | "createdAt" | "updatedAt">;
@@ -11,6 +12,7 @@ export type User = Omit<PrismaUser, "password" | "createdAt" | "updatedAt">;
 export type Issue = PrismaIssue & {
   creator: Omit<User, "createdAt" | "updatedAt"> | null;
   assignee: Omit<User, "createdAt" | "updatedAt"> | null;
+  comments: PrismaComment[];
 };
 
 export type Board = Pick<PrismaBoard, "id"> & {
