@@ -2,22 +2,23 @@ import { Box, Paper, Text } from "@mantine/core";
 import moment from "moment";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React from "react";
+import React, { CSSProperties } from "react";
 import { useQueryClient } from "react-query";
 import useProjectStore from "../../store/project";
 import { Project } from "../../types/client";
 
 type Props = {
   projects: Project[];
+  styles?: CSSProperties;
 };
 
-const ProjectList: React.FC<Props> = ({ projects }) => {
+const ProjectList: React.FC<Props> = ({ projects, styles }) => {
   const router = useRouter();
 
   const { setProject } = useProjectStore();
 
   return (
-    <Paper shadow="sm" radius="md" sx={{ width: "100%" }}>
+    <Paper shadow="sm" radius="md" sx={{ width: "100%" }} style={{ ...styles }}>
       {projects.length > 0 ? (
         projects.map((project: Project) => (
           <Box

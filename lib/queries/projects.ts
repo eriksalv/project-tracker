@@ -55,3 +55,17 @@ export const getUserContributions = async (
   );
   return res.data;
 };
+
+export const getStarredProjects = async (
+  userId: string | string[] | undefined,
+  limit?: number
+): Promise<ProjectResponse> => {
+  if (!isInt(userId)) {
+    throw new Error("Invalid user id");
+  }
+
+  const res = await axios.get(
+    `/api/users/${userId}/projects/starred?limit=${limit ? limit : ""}`
+  );
+  return res.data;
+};
