@@ -14,6 +14,7 @@ import {
   TextInput,
   ThemeIcon,
 } from "@mantine/core";
+import { useRouter } from "next/router";
 import React, { useState } from "react";
 import { useQuery } from "react-query";
 import { ArrowsSort, Circle, Search } from "tabler-icons-react";
@@ -30,12 +31,16 @@ const getTotalPages = (count: number) => {
 };
 
 const IssueList: React.FC<props> = ({ id }) => {
-  const [activePage, setPage] = useState(1);
+  // const [activePage, setPage] = useState(1);
+  const router = useRouter();
+
+  const page = router.query.page ?? 1;
+
   const [createIssueModalOpen, setCreateIssueModalOpen] = useState(false);
 
   const { data, status, isFetching } = useQuery<IssueResponse, Error>(
-    ["issues", id, { page: activePage }],
-    () => getIssues(id, activePage),
+    ["issues", id, { page }],
+    () => getIssues(id, String(page)),
     {
       enabled: id !== undefined,
       keepPreviousData: true,
@@ -158,8 +163,8 @@ const IssueList: React.FC<props> = ({ id }) => {
       )}
       {issues?.length! > 0 && (
         <Pagination
-          page={activePage}
-          onChange={setPage}
+          page={+page}
+          onChange={(page) => router.push(`/projects/${id}?page=${page}`)}
           total={getTotalPages(count!)}
           sx={{ marginTop: "1rem" }}
         />

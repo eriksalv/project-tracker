@@ -29,7 +29,7 @@ export const getProject = async (
 };
 
 export const getUserProjects = async (
-  userId: string | string[] | undefined,
+  userId: string | string[] | number | undefined,
   limit?: number
 ): Promise<ProjectResponse> => {
   if (!isInt(userId)) {

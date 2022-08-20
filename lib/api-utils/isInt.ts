@@ -1,6 +1,8 @@
 // Credit: https://stackoverflow.com/questions/14636536/how-to-check-if-a-variable-is-an-integer-in-javascript
 
-export default function isInt(id: string | string[] | undefined): boolean {
+export default function isInt(
+  id: string | string[] | number | undefined
+): boolean {
   let x;
   if (Number.isNaN(id)) {
     return false;

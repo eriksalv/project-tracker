@@ -13,10 +13,14 @@ export type IssueResponse = {
 
 export const getIssues = async (
   projectId: string | string[] | undefined,
-  page: number
+  page: string | string[] | undefined
 ): Promise<IssueResponse> => {
   if (!isInt(projectId)) {
     throw new Error("Invalid project id");
+  }
+
+  if (!isInt(page)) {
+    throw new Error("Invalid page");
   }
 
   const res = await axios.get(`/api/projects/${projectId}/issues?page=${page}`);

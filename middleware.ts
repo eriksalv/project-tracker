@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export default function middleware(req: NextRequest) {
   if (
+    req.nextUrl.pathname === "/home" ||
     req.nextUrl.pathname.startsWith("/settings") ||
     req.nextUrl.pathname.startsWith("/new-project")
   ) {
@@ -9,6 +10,7 @@ export default function middleware(req: NextRequest) {
   }
 
   if (
+    req.nextUrl.pathname === "/" ||
     req.nextUrl.pathname.startsWith("/login") ||
     req.nextUrl.pathname.startsWith("/register")
   ) {
@@ -32,7 +34,7 @@ function requireAuth(req: NextRequest) {
 function requireNoAuth(req: NextRequest) {
   const jwt = req.cookies.get("token");
 
-  const baseUrl = new URL("/", req.url);
+  const baseUrl = new URL("/home", req.url);
   baseUrl.searchParams.set("from", req.nextUrl.pathname);
 
   if (jwt) return NextResponse.redirect(baseUrl);
