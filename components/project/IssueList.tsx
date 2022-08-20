@@ -15,7 +15,7 @@ import {
   ThemeIcon,
 } from "@mantine/core";
 import { useRouter } from "next/router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { ArrowsSort, Circle, Search } from "tabler-icons-react";
 import { getIssues, IssueResponse } from "../../lib/queries/issues";
@@ -36,14 +36,22 @@ const IssueList: React.FC<props> = ({ id }) => {
 
   const page = router.query.page ?? 1;
 
+  const search = router.query.search ?? "";
+
+  const orderBy = router.query.orderBy ?? "";
+
   const [createIssueModalOpen, setCreateIssueModalOpen] = useState(false);
+  const [input, setInput] = useState<string | string[]>("");
+
+  useEffect(() => {
+    setInput(search);
+  }, [search]);
 
   const { data, status, isFetching } = useQuery<IssueResponse, Error>(
-    ["issues", id, { page }],
-    () => getIssues(id, String(page)),
+    ["issues", id, { page, orderBy, search }],
+    () => getIssues(id, String(page), search, orderBy),
     {
       enabled: id !== undefined,
-      keepPreviousData: true,
     }
   );
 
@@ -86,9 +94,13 @@ const IssueList: React.FC<props> = ({ id }) => {
           placeholder="Search issues..."
           radius="md"
           icon={<Search />}
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
           onKeyUp={(e) => {
             if (e.key === "Enter") {
-              console.log("Searching...");
+              router.push(
+                `/projects/${id}?search=${input}&orderBy=${orderBy}&page=1`
+              );
             }
           }}
           sx={{ flex: 9 }}
@@ -137,12 +149,60 @@ const IssueList: React.FC<props> = ({ id }) => {
                   }
                 >
                   <MenuLabel>Sort by</MenuLabel>
-                  <Menu.Item>Newest</Menu.Item>
-                  <Menu.Item>Oldest</Menu.Item>
-                  <Menu.Item>Recently Updated</Menu.Item>
-                  <Menu.Item>Least recently updated</Menu.Item>
-                  <Menu.Item>Most commented</Menu.Item>
-                  <Menu.Item>Least commented</Menu.Item>
+                  <Menu.Item
+                    onClick={() => {
+                      router.push(
+                        `/projects/${id}?search=${input}&orderBy=createdAt-desc&page=${page}`
+                      );
+                    }}
+                  >
+                    Newest
+                  </Menu.Item>
+                  <Menu.Item
+                    onClick={() => {
+                      router.push(
+                        `/projects/${id}?search=${input}&orderBy=createdAt-asc&page=${page}`
+                      );
+                    }}
+                  >
+                    Oldest
+                  </Menu.Item>
+                  <Menu.Item
+                    onClick={() => {
+                      router.push(
+                        `/projects/${id}?search=${input}&orderBy=updatedAt-desc&page=${page}`
+                      );
+                    }}
+                  >
+                    Recently Updated
+                  </Menu.Item>
+                  <Menu.Item
+                    onClick={() => {
+                      router.push(
+                        `/projects/${id}?search=${input}&orderBy=updatedAt-asc&page=${page}`
+                      );
+                    }}
+                  >
+                    Least recently updated
+                  </Menu.Item>
+                  <Menu.Item
+                    onClick={() => {
+                      router.push(
+                        `/projects/${id}?search=${input}&orderBy=comments-desc&page=${page}`
+                      );
+                    }}
+                  >
+                    Most commented
+                  </Menu.Item>
+                  <Menu.Item
+                    onClick={() => {
+                      router.push(
+                        `/projects/${id}?search=${input}&orderBy=comments-asc&page=${page}`
+                      );
+                    }}
+                  >
+                    Least commented
+                  </Menu.Item>
                 </Menu>
               </Group>
             </Group>
@@ -155,7 +215,7 @@ const IssueList: React.FC<props> = ({ id }) => {
                 weight="bold"
                 sx={{ textAlign: "center", padding: "8rem" }}
               >
-                There are no issues yet
+                No issues found
               </Text>
             )}
           </List>
@@ -164,7 +224,11 @@ const IssueList: React.FC<props> = ({ id }) => {
       {issues?.length! > 0 && (
         <Pagination
           page={+page}
-          onChange={(page) => router.push(`/projects/${id}?page=${page}`)}
+          onChange={(page) =>
+            router.push(
+              `/projects/${id}?search=${search}&orderBy=${orderBy}&page=${page}`
+            )
+          }
           total={getTotalPages(count!)}
           sx={{ marginTop: "1rem" }}
         />

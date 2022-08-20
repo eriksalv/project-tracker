@@ -30,26 +30,102 @@ async function handler(req: ExtendedNextApiRequest, res: NextApiResponse) {
 async function handleGET(req: ExtendedNextApiRequest, res: NextApiResponse) {
   const page = req.query.page ? parseInt(req.query.page as string) : 1;
 
+  const search = typeof req.query.search === "string" ? req.query.search : "";
+
+  let orderByParam: string | string[] =
+    typeof req.query.orderBy === "string" ? req.query.orderBy : "";
+
+  let orderBy: any;
+
+  if (orderByParam.includes("-")) {
+    orderByParam = orderByParam.split("-");
+  }
+
+  // Default if no orderBy is provided, or is invalid
+  if (!Array.isArray(orderByParam)) {
+    orderBy = {
+      id: "desc",
+    };
+  } else {
+    let order = "desc";
+
+    if (orderByParam[1] === "asc") {
+      order = "asc";
+    }
+
+    switch (orderByParam[0]) {
+      case "createdAt":
+        orderBy = {
+          createdAt: order,
+        };
+        break;
+      case "updatedAt":
+        orderBy = {
+          updatedAt: order,
+        };
+        break;
+      case "comments":
+        orderBy = {
+          comments: {
+            _count: order,
+          },
+        };
+        break;
+      default:
+        orderBy = {
+          id: "desc",
+        };
+    }
+  }
+
   const board = req.board!;
 
   const { id: boardId } = board;
 
-  // Get issues with pagination
+  // Get issues with pagination, search, and orderBy
   const issuesAndCount = await prisma.$transaction([
     prisma.issue.findMany({
       where: {
         boardId,
+        OR: [
+          {
+            title: {
+              contains: search,
+              mode: "insensitive",
+            },
+          },
+          {
+            description: {
+              contains: search,
+              mode: "insensitive",
+            },
+          },
+        ],
       },
+      orderBy: [orderBy],
       skip: (page - 1) * 10,
       take: 10,
       ...issueArgs,
-      orderBy: [
-        {
-          id: "desc",
-        },
-      ],
     }),
-    prisma.issue.count({ where: { boardId } }),
+    prisma.issue.count({
+      where: {
+        boardId,
+        OR: [
+          {
+            title: {
+              contains: search,
+              mode: "insensitive",
+            },
+          },
+          {
+            description: {
+              contains: search,
+              mode: "insensitive",
+            },
+          },
+        ],
+      },
+    }),
   ]);
 
   return res.status(200).json({
