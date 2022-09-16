@@ -1,6 +1,6 @@
 import { Project } from "../../types/client";
 import axios from "axios";
-import { CreateProjectForm } from "../validation/project";
+import { CreateProjectForm, UpdateProjectForm } from "../validation/project";
 import isInt from "../api-utils/isInt";
 
 export interface ProjectResponse {
@@ -14,6 +14,29 @@ export const createProject = async (
   data: CreateProjectForm
 ): Promise<ProjectResponse> => {
   const res = await axios.post(`/api/projects`, data);
+  return res.data;
+};
+
+export const updateProject = async (
+  data: UpdateProjectForm,
+  id: string | string[] | undefined
+): Promise<ProjectResponse> => {
+  if (!isInt(id)) {
+    throw new Error("Invalid project id");
+  }
+
+  const res = await axios.put(`/api/projects/${id}`, data);
+  return res.data;
+};
+
+export const deleteProject = async (
+  id: string | string[] | undefined
+): Promise<ProjectResponse> => {
+  if (!isInt(id)) {
+    throw new Error("Invalid project id");
+  }
+
+  const res = await axios.delete(`/api/projects/${id}`);
   return res.data;
 };
 

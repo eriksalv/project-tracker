@@ -1,4 +1,5 @@
-import { Box, Skeleton, Text, Title } from "@mantine/core";
+import { Box, Button, Skeleton, Text, Title } from "@mantine/core";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import { useQuery } from "react-query";
 import ProjectList from "../components/user/ProjectList";
@@ -41,9 +42,15 @@ const Home = () => {
         }}
       >
         <Title sx={{ width: "100%" }}>Your projects</Title>
-        <Text sx={{ marginBottom: "1rem" }} color="dimmed">
-          Projects owned by you
-        </Text>
+        <Link href="/new-project" passHref>
+          <Button
+            component="a"
+            color="teal"
+            sx={{ margin: "1rem 0", maxWidth: "25%" }}
+          >
+            New project
+          </Button>
+        </Link>
         {status === "loading" || !projects ? (
           <Skeleton sx={{ width: "100%" }} height={256} />
         ) : (

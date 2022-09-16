@@ -1,6 +1,7 @@
 import { Avatar, Divider, Menu, MenuLabel } from "@mantine/core";
 import { NextLink } from "@mantine/next";
 import { showNotification, updateNotification } from "@mantine/notifications";
+import { useRouter } from "next/router";
 import React from "react";
 import { useMutation } from "react-query";
 import { showLoader, showInfo } from "../../lib/notifications";
@@ -11,6 +12,7 @@ const ProfileMenu: React.FC<{ id: number; username: string }> = ({
   id,
   username,
 }) => {
+  const router = useRouter();
   const { logout } = useAuthStore();
 
   const { mutate } = useMutation(signout, {
@@ -20,6 +22,7 @@ const ProfileMenu: React.FC<{ id: number; username: string }> = ({
       updateNotification(
         showInfo("You are now signed out", "signout", "Signed out")
       );
+      router.push("/");
     },
   });
 
@@ -52,9 +55,7 @@ const ProfileMenu: React.FC<{ id: number; username: string }> = ({
 
       <Divider />
 
-      <Menu.Item component={NextLink} href="/login" onClick={onSignOut}>
-        Sign out
-      </Menu.Item>
+      <Menu.Item onClick={onSignOut}>Sign out</Menu.Item>
     </Menu>
   );
 };

@@ -6,7 +6,6 @@ import {
   UpdateProjectForm,
   updateProjectSchema,
 } from "../../../../lib/validation/project";
-import validate from "../../../../lib/validation/validate";
 import withAuth from "../../../../middleware/with-auth";
 import withProject from "../../../../middleware/with-project";
 import withValidation from "../../../../middleware/with-validation";
@@ -41,6 +40,14 @@ async function handleGET(req: ExtendedNextApiRequest, res: NextApiResponse) {
 
 async function handlePUT(req: ExtendedNextApiRequest, res: NextApiResponse) {
   const data = req.data;
+  const user = req.user;
+  const project = req.project;
+
+  if (user?.id != project?.ownerId) {
+    return res
+      .status(403)
+      .json({ message: "You do not have permissions to update this project" });
+  }
 
   const { id } = req.project!;
 
@@ -69,6 +76,14 @@ async function handlePUT(req: ExtendedNextApiRequest, res: NextApiResponse) {
 
 async function handleDELETE(req: ExtendedNextApiRequest, res: NextApiResponse) {
   const { id } = req.project!;
+  const user = req.user;
+  const project = req.project;
+
+  if (user?.id != project?.ownerId) {
+    return res
+      .status(403)
+      .json({ message: "You do not have permissions to delete this project" });
+  }
 
   try {
     await prisma.project.delete({ where: { id: +id! } });

@@ -121,7 +121,7 @@ const IssueDetails = () => {
   };
 
   if (isLoading) {
-    return <Skeleton height="500px" />;
+    return <Skeleton height="500px" sx={{ maxWidth: "960px" }} />;
   }
 
   return (
