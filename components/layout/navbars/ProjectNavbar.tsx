@@ -1,7 +1,7 @@
 import React from "react";
 import { Navbar as MantineNavbar, Skeleton, Text } from "@mantine/core";
 import MainLink from "./MainLink";
-import { ListDetails, Settings } from "tabler-icons-react";
+import { ListDetails, Settings, Users } from "tabler-icons-react";
 import useProjectStore from "../../../store/project";
 
 interface Props {
@@ -35,6 +35,12 @@ const Navbar: React.FC<Props> = ({ opened }) => {
               label="Settings"
               color="blue"
               icon={<Settings />}
+            />
+            <MainLink
+              route={`/projects/${project.id}/contributors`}
+              label="Contributors"
+              color="grape"
+              icon={<Users />}
             />
           </MantineNavbar.Section>
         </>

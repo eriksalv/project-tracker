@@ -203,11 +203,6 @@ const ProjectSettings = () => {
               </Group>
             )}
           </form>
-
-          <Text sx={{ fontWeight: "normal", fontSize: "2.2rem" }}>
-            Contributors
-          </Text>
-          <Divider sx={{ margin: "1rem 0" }} />
         </Box>
       ) : (
         <Skeleton height="500px" sx={{ maxWidth: "960px" }} />

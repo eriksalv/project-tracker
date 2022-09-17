@@ -1,4 +1,11 @@
-import { ActionIcon, Group, Skeleton, Text, Title } from "@mantine/core";
+import {
+  ActionIcon,
+  Divider,
+  Group,
+  Skeleton,
+  Text,
+  Title,
+} from "@mantine/core";
 import { useRouter } from "next/router";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { getProject, ProjectResponse } from "../../lib/queries/projects";
@@ -169,6 +176,8 @@ const ProjectHeader = () => {
               </ActionIcon>
             )}
           </Group>
+
+          <Divider sx={{ marginTop: "1rem" }} />
         </>
       )}
     </Skeleton>

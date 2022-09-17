@@ -19,6 +19,8 @@ import React, { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { ArrowsSort, Circle, Search } from "tabler-icons-react";
 import { getIssues, IssueResponse } from "../../lib/queries/issues";
+import useAuthStore from "../../store/auth";
+import useProjectStore from "../../store/project";
 import Issue from "./Issue";
 import IssueForm from "./IssueForm";
 
@@ -32,7 +34,9 @@ const getTotalPages = (count: number) => {
 
 const IssueList: React.FC<props> = ({ id }) => {
   // const [activePage, setPage] = useState(1);
+  const { user } = useAuthStore();
   const router = useRouter();
+  const { project } = useProjectStore();
 
   const page = router.query.page ?? 1;
 
@@ -105,13 +109,19 @@ const IssueList: React.FC<props> = ({ id }) => {
           }}
           sx={{ flex: 9 }}
         />
-        <Button
-          sx={{ flex: 1, maxWidth: "8rem" }}
-          color="teal"
-          onClick={() => setCreateIssueModalOpen(true)}
-        >
-          New issue
-        </Button>
+        {/* Show "create-issue" button if user is a contributor */}
+        {user &&
+          project?.board.contributors
+            .map((c) => c.user.id)
+            .includes(user.id) && (
+            <Button
+              sx={{ flex: 1, maxWidth: "8rem" }}
+              color="teal"
+              onClick={() => setCreateIssueModalOpen(true)}
+            >
+              New issue
+            </Button>
+          )}
       </Group>
 
       {issues && (

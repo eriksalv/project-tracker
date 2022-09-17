@@ -15,8 +15,10 @@ export type Issue = PrismaIssue & {
   comments: PrismaComment[];
 };
 
+export type Contributor = PrismaContribution & { user: User };
+
 export type Board = Pick<PrismaBoard, "id"> & {
-  contributors: [{ user: User }];
+  contributors: Contributor[];
 };
 
 export type Project = PrismaProject & { owner: User } & { board: Board };

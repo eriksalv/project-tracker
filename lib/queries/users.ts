@@ -21,8 +21,11 @@ export const getUser = async (
   return res.data;
 };
 
-export const getUsers = async (): Promise<UserResponse> => {
-  const res = await axios.get("/api/users");
+export const getUsers = async (
+  search?: string,
+  limit?: number
+): Promise<UserResponse> => {
+  const res = await axios.get(`/api/users?search=${search}&limit=${limit}`);
   return res.data;
 };
 

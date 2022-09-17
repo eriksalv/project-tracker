@@ -9,7 +9,7 @@ export default async function handler(
 ) {
   switch (req.method) {
     case "GET":
-      return await handleGET(res);
+      return await handleGET(req, res);
     default:
       return res.status(405).json({
         message: `The HTTP method ${req.method} is not supported for this route.`,
@@ -17,7 +17,30 @@ export default async function handler(
   }
 }
 
-async function handleGET(res: NextApiResponse) {
-  const users = await prisma.user.findMany(userArgs);
-  return res.status(200).json(users);
+async function handleGET(req: ExtendedNextApiRequest, res: NextApiResponse) {
+  const limit = req.query.limit ? parseInt(req.query.limit as string) : 10;
+
+  const search = typeof req.query.search === "string" ? req.query.search : "";
+
+  const users = await prisma.user.findMany({
+    where: {
+      OR: [
+        {
+          email: {
+            contains: search,
+            mode: "insensitive",
+          },
+        },
+        {
+          username: {
+            contains: search,
+            mode: "insensitive",
+          },
+        },
+      ],
+    },
+    take: limit,
+    ...userArgs,
+  });
+  return res.status(200).json({ users });
 }
