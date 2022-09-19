@@ -15,7 +15,7 @@ const Issue = () => {
     >
       <ProjectHeader />
       <IssueDetails />
-      <Comments />
+      {/* <Comments /> */}
     </Box>
   );
 };

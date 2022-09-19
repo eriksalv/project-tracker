@@ -75,7 +75,12 @@ const IssueList: React.FC<props> = ({ id }) => {
       visible={isLoading}
       width="100%"
       height={isLoading ? "500px" : "auto"}
-      sx={{ display: "flex", justifyContent: "center", flexWrap: "wrap" }}
+      sx={{
+        display: "flex",
+        justifyContent: "center",
+        flexWrap: "wrap",
+        maxWidth: "1280px",
+      }}
     >
       <Modal
         opened={createIssueModalOpen}

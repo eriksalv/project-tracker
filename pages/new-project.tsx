@@ -1,5 +1,5 @@
 import { yupResolver } from "@hookform/resolvers/yup";
-import { Button, Radio, Textarea, TextInput } from "@mantine/core";
+import { Box, Button, Radio, Textarea, TextInput } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
@@ -48,63 +48,81 @@ const NewProject = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <TextInput
-        id="title"
-        label="Title"
-        {...register("title")}
-        error={errors.title?.message}
-        required
-      />
-
-      <Textarea
-        id="description"
-        label="Description"
-        {...register("description")}
-        error={errors.description?.message}
-        autosize
-        minRows={2}
-        maxRows={4}
-      />
-
-      <Radio
-        sx={{ marginBottom: "1rem", marginTop: "1rem" }}
-        value="true"
-        label="Public"
-        datatype="boolean"
-        {...register("public")}
-        checked={isPublic}
-        onChange={() => setIsPublic(true)}
-        required
-      />
-      <Radio
-        sx={{ marginBottom: "1rem", marginTop: "1rem" }}
-        value="false"
-        label="Private"
-        datatype="boolean"
-        {...register("public")}
-        checked={!isPublic}
-        onChange={() => setIsPublic(false)}
-        required
-      />
-
-      <Button
-        type="submit"
-        loading={registerMutation.isLoading}
-        fullWidth
-        color="cyan"
-        styles={(theme) => ({
-          root: {
-            marginTop: 10,
-            "&:hover": {
-              backgroundColor: theme.fn.darken("#00acee", 0.05),
-            },
-          },
-        })}
+    <Box
+      sx={{
+        width: "100%",
+        display: "flex",
+        justifyContent: "center",
+        flexWrap: "wrap",
+      }}
+    >
+      <Box
+        sx={{
+          width: "100%",
+          maxWidth: "960px",
+          display: "flex",
+          flexDirection: "column",
+        }}
       >
-        Create Project
-      </Button>
-    </form>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <TextInput
+            id="title"
+            label="Title"
+            {...register("title")}
+            error={errors.title?.message}
+            required
+          />
+
+          <Textarea
+            id="description"
+            label="Description"
+            {...register("description")}
+            error={errors.description?.message}
+            autosize
+            minRows={2}
+            maxRows={4}
+          />
+
+          <Radio
+            sx={{ marginBottom: "1rem", marginTop: "1rem" }}
+            value="true"
+            label="Public"
+            datatype="boolean"
+            {...register("public")}
+            checked={isPublic}
+            onChange={() => setIsPublic(true)}
+            required
+          />
+          <Radio
+            sx={{ marginBottom: "1rem", marginTop: "1rem" }}
+            value="false"
+            label="Private"
+            datatype="boolean"
+            {...register("public")}
+            checked={!isPublic}
+            onChange={() => setIsPublic(false)}
+            required
+          />
+
+          <Button
+            type="submit"
+            loading={registerMutation.isLoading}
+            fullWidth
+            color="cyan"
+            styles={(theme) => ({
+              root: {
+                marginTop: 10,
+                "&:hover": {
+                  backgroundColor: theme.fn.darken("#00acee", 0.05),
+                },
+              },
+            })}
+          >
+            Create Project
+          </Button>
+        </form>
+      </Box>
+    </Box>
   );
 };
 

@@ -1,6 +1,6 @@
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { Button, Card, PasswordInput, TextInput } from "@mantine/core";
+import { Box, Button, Card, PasswordInput, TextInput } from "@mantine/core";
 import { LoginForm, loginSchema } from "../lib/validation/signin";
 import { signin } from "../lib/queries/auth";
 import { useMutation } from "react-query";
@@ -43,40 +43,58 @@ const LoginPage = () => {
   };
 
   return (
-    <Card>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <TextInput
-          id="emailOrUsername"
-          label="Email or username"
-          {...register("emailOrUsername")}
-          error={errors.emailOrUsername?.message}
-        />
+    <Box
+      sx={{
+        width: "100%",
+        display: "flex",
+        justifyContent: "center",
+        flexWrap: "wrap",
+      }}
+    >
+      <Box
+        sx={{
+          width: "100%",
+          maxWidth: "960px",
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+        <Card>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <TextInput
+              id="emailOrUsername"
+              label="Email or username"
+              {...register("emailOrUsername")}
+              error={errors.emailOrUsername?.message}
+            />
 
-        <PasswordInput
-          id="password"
-          label="Password"
-          {...register("password")}
-          error={errors.password?.message}
-        />
+            <PasswordInput
+              id="password"
+              label="Password"
+              {...register("password")}
+              error={errors.password?.message}
+            />
 
-        <Button
-          type="submit"
-          loading={loginMutation.isLoading}
-          fullWidth
-          color="cyan"
-          styles={(theme) => ({
-            root: {
-              marginTop: 10,
-              "&:hover": {
-                backgroundColor: theme.fn.darken("#00acee", 0.05),
-              },
-            },
-          })}
-        >
-          Sign in
-        </Button>
-      </form>
-    </Card>
+            <Button
+              type="submit"
+              loading={loginMutation.isLoading}
+              fullWidth
+              color="cyan"
+              styles={(theme) => ({
+                root: {
+                  marginTop: 10,
+                  "&:hover": {
+                    backgroundColor: theme.fn.darken("#00acee", 0.05),
+                  },
+                },
+              })}
+            >
+              Sign in
+            </Button>
+          </form>
+        </Card>
+      </Box>
+    </Box>
   );
 };
 
