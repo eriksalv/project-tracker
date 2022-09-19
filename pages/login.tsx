@@ -25,7 +25,7 @@ const LoginPage = () => {
     {
       onSuccess: (data) => {
         zustandSignin(data);
-        router.replace("/");
+        router.replace("/home");
 
         showNotification({
           ...showSuccess("Logged in successfully", "login"),

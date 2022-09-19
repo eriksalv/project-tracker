@@ -17,8 +17,6 @@ const ProfileMenu: React.FC<{ id: number; username: string }> = ({
 
   const { mutate } = useMutation(signout, {
     onSuccess: () => {
-      logout();
-
       updateNotification(
         showInfo("You are now signed out", "signout", "Signed out")
       );
@@ -28,7 +26,7 @@ const ProfileMenu: React.FC<{ id: number; username: string }> = ({
 
   const onSignOut = () => {
     showNotification(showLoader("signout", "Signing out..."));
-
+    logout();
     mutate();
   };
 

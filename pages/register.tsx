@@ -26,7 +26,7 @@ const RegisterPage = () => {
     {
       onSuccess: (data) => {
         signin(data);
-        router.replace("/");
+        router.replace("/home");
 
         showNotification({
           ...showSuccess("Registered successfully", "register"),

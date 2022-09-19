@@ -42,7 +42,7 @@ const Header: React.FC<Props> = ({ theme, opened, setOpened }) => {
           />
         </MediaQuery>
 
-        <Link href="/" passHref>
+        <Link href={user ? "/home" : "/"} passHref>
           <Title order={2} style={{ cursor: "pointer" }}>
             Project Tracker
           </Title>
