@@ -1,4 +1,4 @@
-import { Box, Button, Skeleton, Text, Title } from "@mantine/core";
+import { Box, Button, Group, Skeleton, Text, Title } from "@mantine/core";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useQuery } from "react-query";
@@ -41,16 +41,19 @@ const Home = () => {
           flexDirection: "column",
         }}
       >
-        <Title sx={{ width: "100%" }}>Your projects</Title>
-        <Link href="/new-project" passHref>
-          <Button
-            component="a"
-            color="teal"
-            sx={{ margin: "1rem 0", maxWidth: "25%" }}
-          >
-            New project
-          </Button>
-        </Link>
+        <Group sx={{ justifyContent: "space-between", alignItems: "center" }}>
+          <Title>Your projects</Title>
+          <Link href="/new-project" passHref>
+            <Button
+              component="a"
+              color="teal"
+              radius="md"
+              sx={{ margin: "1rem 0", maxWidth: "25%" }}
+            >
+              New project
+            </Button>
+          </Link>
+        </Group>
         {status === "loading" || !projects ? (
           <Skeleton sx={{ width: "100%" }} height={256} />
         ) : (
