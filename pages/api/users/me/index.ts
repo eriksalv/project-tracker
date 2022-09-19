@@ -10,6 +10,7 @@ import {
 } from "../../../../lib/validation/update-profile";
 import withValidation from "../../../../middleware/with-validation";
 import { ExtendedNextApiRequest } from "../../../../types/next";
+import { verifyPassword, hashPassword } from "../../../../lib/api-utils/auth";
 
 async function handler(req: ExtendedNextApiRequest, res: NextApiResponse) {
   switch (req.method) {
@@ -34,25 +35,57 @@ async function handlePUT(
   req: ExtendedNextApiRequest,
   res: NextApiResponse<UserResponse>
 ) {
-  const { user, data } = req;
+  const { user: u, data } = req;
 
-  const { id } = user!;
+  const { id } = u!;
 
-  const { name } = data as UpdateProfileForm;
+  const { name, username, email, password, newPassword } =
+    data as UpdateProfileForm;
+
+  const user = await prisma.user.findUnique({
+    where: {
+      id: u?.id,
+    },
+  });
+
+  if (!(await verifyPassword(password!, user?.password!))) {
+    return res.status(401).json({ message: "Incorrect password" });
+  }
+
+  if (
+    username &&
+    username != user?.username &&
+    (await prisma.user.findUnique({ where: { username } }))
+  ) {
+    return res.status(409).json({ message: "Username already taken" });
+  }
+
+  if (
+    email &&
+    email != user?.email &&
+    (await prisma.user.findUnique({ where: { email } }))
+  ) {
+    return res.status(409).json({ message: "Email already taken" });
+  }
 
   try {
+    const hashedNewPassword = newPassword && (await hashPassword(newPassword));
+
     const updateUser = await prisma.user.update({
       where: {
         id,
       },
       data: {
         name,
+        username,
+        email,
+        password: hashedNewPassword,
       },
       ...userArgs,
     });
 
     return res.status(200).json({
-      message: "Successfully updated user",
+      message: "User updated successfully",
       user: updateUser,
     });
   } catch (error) {

@@ -30,9 +30,8 @@ export const getUsers = async (
 };
 
 export const updateProfile = async (
-  username: string,
   updateProfileRequest: UpdateProfileForm
 ): Promise<UserResponse> => {
-  const res = await axios.put(`api/users/${username}`, updateProfileRequest);
+  const res = await axios.put(`/api/users/me`, updateProfileRequest);
   return res.data;
 };
